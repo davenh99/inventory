@@ -37,8 +37,6 @@ archives:
     ids: [app_build]
     formats: zip
     files:
-      - src: dist/pb_migrations/*
-        dst: pb_migrations/
       - LICENSE.md
 
 checksum:
