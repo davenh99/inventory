@@ -1,6 +1,6 @@
 /* This file was automatically generated, changes will be overwritten. */
 
-export interface BaseRecord {
+interface BaseRecord {
   id: string;
   collectionName: string;
   collectionId: string;
@@ -9,7 +9,7 @@ export interface BaseRecord {
 }
 
 /* Collection type: auth */
-export interface User {
+interface User {
   email: string; // email
   emailVisibility?: boolean; // bool
   verified?: boolean; // bool
@@ -18,10 +18,10 @@ export interface User {
   role: string; // relation
 }
 
-export type UserRecord = User & BaseRecord;
+type UserRecord = User & BaseRecord;
 
 /* Collection type: base */
-export interface Changelog {
+interface Changelog {
   collection: string; // text
   recordId: string; // text
   changeType: "create" | "update" | "delete"; // select
@@ -29,28 +29,28 @@ export interface Changelog {
   reason?: string; // text
 }
 
-export type ChangelogRecord = Changelog & BaseRecord;
+type ChangelogRecord = Changelog & BaseRecord;
 
 /* Collection type: base */
-export interface ChangelogDiff {
+interface ChangelogDiff {
   changelogId: string; // relation
   field: string; // text
   valueOld?: string; // text
   valueNew?: string; // text
 }
 
-export type ChangelogDiffRecord = ChangelogDiff & BaseRecord;
+type ChangelogDiffRecord = ChangelogDiff & BaseRecord;
 
 /* Collection type: base */
-export interface Role {
+interface Role {
   name: string; // text
   permissions?: string[]; // relation
 }
 
-export type RoleRecord = Role & BaseRecord;
+type RoleRecord = Role & BaseRecord;
 
 /* Collection type: base */
-export interface Permission {
+interface Permission {
   name: string; // text
   collections?: any; // json
   canView?: boolean; // bool
@@ -60,5 +60,5 @@ export interface Permission {
   canDelete?: boolean; // bool
 }
 
-export type PermissionRecord = Permission & BaseRecord;
+type PermissionRecord = Permission & BaseRecord;
 

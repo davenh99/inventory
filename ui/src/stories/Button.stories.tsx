@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import { Button } from "../components/";
-import { Show } from "solid-js";
+import { For, Show } from "solid-js";
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
@@ -15,43 +15,37 @@ const variants = ["solid", "text"] as const;
 const appearances = ["primary", "success", "warning", "neutral", "error", "muted"] as const;
 const sizes = ["xs", "sm", "md", "lg"] as const;
 
-// Helper: render grid of buttons
-const renderButtons = (variant: (typeof variants)[number], mode: "light" | "dark") => (
-  <div class={`p-4 ${mode === "dark" ? "dark" : ""}`}>
-    <div class="grid grid-cols-6 gap-4">
-      {appearances.map((appearance) => (
-        <Button variant={variant} appearance={appearance} size="md">
-          {appearance}
-        </Button>
-      ))}
-    </div>
-  </div>
-);
-
-export const AllSolid: Story = {
+export const AllButtons: Story = {
   render: () => (
     <div class="space-y-4">
-      <Show when={true}>{renderButtons("solid", "light")}</Show>
-      <Show when={true}>{renderButtons("solid", "dark")}</Show>
-    </div>
-  ),
-};
-
-export const AllVariants: Story = {
-  render: () => (
-    <div class="space-y-6 bg-[var(--color-background)]">
-      {variants.map((variant) => (
-        <div>
-          <h3 class="mb-2 font-bold">{variant}</h3>
-          <div class="flex flex-wrap gap-2">
-            {appearances.map((appearance) => (
-              <Button variant={variant} appearance={appearance} size="md">
-                {appearance}
-              </Button>
-            ))}
+      <For each={variants}>
+        {(v) => (
+          <div>
+            <h3 class="mt-5 mb-1 font-bold">Variant: {v}</h3>
+            <For each={sizes}>
+              {(s) => (
+                <div>
+                  <h4 class="mt-2 font-bold">Size: {s}</h4>
+                  <For each={[false, true]}>
+                    {(l) => (
+                      <div class="space-x-3">
+                        <h5 class="mt-2 font-bold">Loading: {l}</h5>
+                        <For each={appearances}>
+                          {(a) => (
+                            <Button variant={v} appearance={a} size={s} isLoading={l}>
+                              {a}
+                            </Button>
+                          )}
+                        </For>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              )}
+            </For>
           </div>
-        </div>
-      ))}
+        )}
+      </For>
     </div>
   ),
 };

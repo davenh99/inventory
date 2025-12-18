@@ -45,9 +45,8 @@ export function usePB() {
         }
 
         await pb.collection("users").update(authData.record.id, formData, { expand: EXPAND_USER });
-      } catch (e: any) {
-        alert(`${e}: ${e.originalError}`);
-        alert("could not update name");
+      } catch (e) {
+        console.error("Could not update name: ", e);
       }
     }
   };

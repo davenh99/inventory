@@ -34,3 +34,12 @@ dev: serve-dev
 
 types: build
 	@cd dist; ./$(VITE_APP_NAME) gen-types
+
+release-patch:
+	./release.sh patch
+
+release-minor:
+	./release.sh minor
+
+release-major:
+	./release.sh major

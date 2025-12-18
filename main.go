@@ -2,6 +2,7 @@ package main
 
 import (
 	"app/plugins/changelog"
+	"app/plugins/computedfields"
 	"app/plugins/gentypes"
 	"app/plugins/roles"
 	"app/utils"
@@ -29,6 +30,8 @@ func main() {
 	env := utils.Env
 	app := pocketbase.New()
 
+	computedfields.Register(app, computedfields.Config{})
+
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: env.Env == "development",
 	})
@@ -52,7 +55,9 @@ func main() {
 
 	switch env.Env {
 	case "development":
-		gentypes.Register(app)
+		gentypes.Register(app, gentypes.Config{
+			FilePath: "ui/base.d.ts",
+		})
 	case "production":
 		ghupdate.MustRegister(app, app.RootCmd, ghupdate.Config{
 			Owner:             env.GithubOwner,

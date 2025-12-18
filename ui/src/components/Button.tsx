@@ -1,4 +1,4 @@
-import { ParentComponent, Show, splitProps, ValidComponent } from "solid-js";
+import { createMemo, ParentComponent, Show, splitProps, ValidComponent } from "solid-js";
 import { A } from "@solidjs/router";
 import { ButtonRootProps, Button as KButton } from "@kobalte/core/button";
 import { PolymorphicProps } from "@kobalte/core/polymorphic";
@@ -93,13 +93,14 @@ export const Button: ParentComponent<Props> = (props) => {
     "isLoading",
   ]);
 
-  const classes = () =>
+  const classes = createMemo(() =>
     button({
       variant: local.variant,
       appearance: local.appearance,
       size: local.size,
       class: local.class as string,
-    });
+    })
+  );
 
   return (
     <KButton
