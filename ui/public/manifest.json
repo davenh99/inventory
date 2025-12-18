@@ -1,6 +1,6 @@
 {
-  "name": "App",
-  "short_name": "App",
+  "name": "Inventory",
+  "short_name": "Inventory",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#2f3e46",

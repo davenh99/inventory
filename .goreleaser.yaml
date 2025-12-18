@@ -1,6 +1,6 @@
 version: 2
 
-project_name: app
+project_name: inventory
 
 dist: .builds
 
@@ -13,7 +13,7 @@ before:
 builds:
   - id: app_build
     main: ./main.go
-    binary: app
+    binary: inventory
     ldflags:
       - -s -w -X main.Version={{ .Version }}
     env:
