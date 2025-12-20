@@ -3,7 +3,6 @@ import PocketBase, { ClientResponseError } from "pocketbase";
 import { createStore } from "solid-js/store";
 
 import { PBContext } from "./context";
-import { TUser } from "../../types";
 import { EXPAND_USER } from "../../../constants";
 
 const apiUrl =

@@ -15,6 +15,7 @@ import Unauthorised from "./routes/Unauthorised";
 import { Toaster } from "./config/toaster";
 import { Toast } from "./config/toaster/";
 import ProtectedRoute from "./config/role/ProtectedRoute";
+import { IGNORE_ERRORS } from "../constants";
 
 const NotFound = lazy(() => import("./routes/NotFound"));
 const Auth = lazy(() => import("./routes/Auth"));
@@ -28,28 +29,40 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 }
 
 window.onerror = (msg) => {
-  toaster.show((props) => <Toast {...props} title="JavaScript Error" msg={String(msg)} />);
+  if (!IGNORE_ERRORS.includes(String(msg))) {
+    toaster.show((props) => <Toast {...props} variant="error" title="JS Error" msg={String(msg)} />);
+  }
 };
 
 window.onunhandledrejection = (event) => {
-  toaster.show((props) => <Toast {...props} title="Unhandled Promise" msg={String(event.reason)} />);
+  toaster.show((props) => (
+    <Toast {...props} variant="error" title="Unhandled Promise" msg={String(event.reason)} />
+  ));
+};
+
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  originalConsoleError(...args);
+  toaster.show((props) => (
+    <Toast {...props} variant="error" title="Error" msg={args.map(String).join(" ")} />
+  ));
 };
 
 render(
   () => (
-    <ErrorBoundary
-      fallback={(err) => {
-        toaster.show((props) => <Toast {...props} title="App Error" msg={String(err.message ?? err)} />);
-        return null;
-      }}
-    >
-      <PBProvider>
-        <ThemeProvider>
-          <Content />
-          <Toaster />
-        </ThemeProvider>
-      </PBProvider>
-    </ErrorBoundary>
+    // <ErrorBoundary
+    //   fallback={(err) => {
+    //     toaster.show((props) => <Toast {...props} title="App Error" msg={String(err.message ?? err)} />);
+    //     return null;
+    //   }}
+    // >
+    <PBProvider>
+      <ThemeProvider>
+        <Content />
+        <Toaster />
+      </ThemeProvider>
+    </PBProvider>
+    // </ErrorBoundary>
   ),
   root!
 );
@@ -90,7 +103,7 @@ function App() {
 function Site() {
   return (
     <Route path="/" component={SiteLayout}>
-      <Route path="/auth" component={Auth} />
+      <Route path="/" component={Auth} />
     </Route>
   );
 }

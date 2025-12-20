@@ -1,4 +1,5 @@
 export const EXPAND_USER = "role.permissions";
+
 export const DROP_ABOVE_CLASS = `
   relative 
   before:absolute 
@@ -20,3 +21,8 @@ export const DROP_BELOW_CLASS = `
   after:bg-blue-500 
   after:content-['']
 `;
+
+export const IGNORE_ERRORS = [
+  "ResizeObserver loop completed with undelivered notifications.",
+  "ResizeObserver loop limit exceeded",
+];
