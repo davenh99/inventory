@@ -20,15 +20,6 @@ type InputRootProps<T extends ValidComponent = "div"> = ExtraProps &
 
 const inputRoot = tv({
   base: "flex gap-1",
-  variants: {
-    labelPosition: {
-      inline: "flex-row items-center",
-      above: "flex-col",
-    },
-  },
-  defaultVariants: {
-    labelPosition: "above",
-  },
 });
 
 const inputField = tv({

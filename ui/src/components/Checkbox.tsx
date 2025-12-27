@@ -21,15 +21,17 @@ export const Checkbox: Component<Props> = (props) => {
   };
 
   return (
-    <KCheckbox checked={props.checked} onChange={handleChange} class="flex flex-row space-x-2">
+    <KCheckbox checked={props.checked} onChange={handleChange} class="flex flex-row space-x-2 items-center">
       <KCheckbox.Input />
-      <KCheckbox.Control class="h-5 w-5 bg-black rounded-sm">
-        <KCheckbox.Indicator class="text-white">
+      <KCheckbox.Control class="h-5 w-5 rounded-sm border-2 border-[var(--color-light-muted)] dark:border-[var(--color-dark-muted)] bg-[var(--color-light-surface)] dark:bg-[var(--color-dark-surface)] data-[checked]:bg-[var(--color-light-primary)] dark:data-[checked]:bg-[var(--color-dark-primary)] transition-colors">
+        <KCheckbox.Indicator class="text-[var(--color-light-surface)] dark:text-[var(--color-dark-surface)]">
           <Check />
         </KCheckbox.Indicator>
       </KCheckbox.Control>
       <Show when={props.label}>
-        <KCheckbox.Label>{props.label}</KCheckbox.Label>
+        <KCheckbox.Label class="text-[var(--color-text-light-primary)] dark:text-[var(--color-text-dark-primary)]">
+          {props.label}
+        </KCheckbox.Label>
       </Show>
     </KCheckbox>
   );

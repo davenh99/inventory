@@ -45,7 +45,7 @@ export const DefaultRowRenderer = <T,>(props: {
 }): JSXElement => {
   return (
     <div
-      class="flex justify-between items-center hover:bg-gray-700/50 cursor-pointer text-sm border-b border-gray-700 py-2"
+      class="flex justify-between items-center cursor-pointer text-sm border-b border-[var(--color-light-muted)] dark:border-[var(--color-dark-muted)] py-2 hover:bg-[var(--color-light-muted)] dark:hover:bg-[var(--color-dark-muted)]"
       onClick={() => props.onClick(props.row.original)}
     >
       <For each={props.row.getVisibleCells()}>
@@ -149,7 +149,7 @@ export const List = <T,>(props: ListProps<T>): JSXElement => {
         <Show when={props.headers}>
           <For each={table.getHeaderGroups()}>
             {(headerGroup) => (
-              <div class="flex flex-row w-full justify-between sticky top-0 bg-charcoal-500/95 text-dark-slate-gray-900 backdrop-blur-sm p-2 z-10">
+              <div class="flex flex-row w-full justify-between sticky top-0 bg-[var(--color-light-surface)]/95 dark:bg-[var(--color-dark-surface)]/95 text-[var(--color-text-light-primary)] dark:text-[var(--color-dark-primary)] backdrop-blur-sm p-2 z-10">
                 <For each={headerGroup.headers}>
                   {(header) => (
                     <div class="text-left font-bold">
