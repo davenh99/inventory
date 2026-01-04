@@ -4,6 +4,7 @@ import { createStore } from "solid-js/store";
 
 import { PBContext } from "./context";
 import { EXPAND_USER } from "../../../constants";
+import { Collections, TypedPocketBase } from "../../../pocketbase";
 
 const apiUrl =
   import.meta.env.VITE_PUBLIC_API_URL ||
@@ -12,7 +13,7 @@ const apiUrl =
     : window.location.origin);
 
 export const PBProvider: ParentComponent = (props) => {
-  const pb = new PocketBase(apiUrl);
+  const pb = new PocketBase(apiUrl) as TypedPocketBase;
   const [pbStore, setPBStore] = createStore({
     user: pb.authStore.record as TUser | null,
     loading: true,
@@ -20,14 +21,14 @@ export const PBProvider: ParentComponent = (props) => {
   });
 
   pb.authStore.onChange(() => {
-    setPBStore("user", pb.authStore.record as TUser | null);
+    setPBStore(Collections.User, pb.authStore.record as TUser | null);
   });
 
   const checkAuth = async () => {
     if (pb.authStore.token) {
       if (pb.authStore.isValid) {
         try {
-          await pb.collection("user").authRefresh({ expand: EXPAND_USER });
+          await pb.collection(Collections.User).authRefresh({ expand: EXPAND_USER });
           setPBStore("networkError", false);
         } catch (e) {
           if (e instanceof ClientResponseError && [401, 403].includes(e.status)) {
@@ -40,7 +41,7 @@ export const PBProvider: ParentComponent = (props) => {
         pb.authStore.clear();
       }
     } else {
-      setPBStore("user", null);
+      setPBStore(Collections.User, null);
     }
   };
 
@@ -51,7 +52,7 @@ export const PBProvider: ParentComponent = (props) => {
   createEffect(() => {
     if (!pb.authStore.record?.id) return;
 
-    const unsubscribe = pb.collection("user").subscribe(pb.authStore.record.id, (e) => {
+    const unsubscribe = pb.collection(Collections.User).subscribe(pb.authStore.record.id, (e) => {
       if (e.action == "delete") {
         pb.authStore.clear();
       } else {

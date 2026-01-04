@@ -56,7 +56,7 @@ func main() {
 	switch env.Env {
 	case "development":
 		gentypes.Register(app, gentypes.Config{
-			FilePath: "ui/base.d.ts",
+			FilePath: "ui",
 		})
 	case "production":
 		ghupdate.MustRegister(app, app.RootCmd, ghupdate.Config{

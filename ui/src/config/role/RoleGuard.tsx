@@ -1,8 +1,7 @@
 import { JSX, ParentComponent, Show } from "solid-js";
-import { TPermission } from "../../types";
 import { useAuthPB } from "../pocketbase";
 import { hasPermission } from "../../methods/permissions";
-import Container from "../../views/app/Container";
+import { Container } from "@solidpb/ui-kit";
 
 interface RoleGuardProps {
   collection?: string;

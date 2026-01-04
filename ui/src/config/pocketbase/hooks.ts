@@ -1,7 +1,9 @@
 import { useContext } from "solid-js";
 import { PBContext } from "./context";
 import { ClientResponseError } from "pocketbase";
+
 import { EXPAND_USER } from "../../../constants";
+import { Collections } from "../../../pocketbase";
 
 const BaseSignUpData = {
   dob: "",
@@ -17,11 +19,15 @@ export function usePB() {
   const { pb } = context;
 
   const login = async (usernameOrEmail: string, password: string) => {
-    await pb.collection("user").authWithPassword(usernameOrEmail, password, { expand: EXPAND_USER });
+    await pb
+      .collection(Collections.User)
+      .authWithPassword(usernameOrEmail, password, { expand: EXPAND_USER });
   };
 
   const signUp = async (email: string, name: string, password: string, passwordConfirm: string) => {
-    await pb.collection("user").create({ ...BaseSignUpData, name, email, password, passwordConfirm });
+    await pb
+      .collection(Collections.User)
+      .create({ ...BaseSignUpData, name, email, password, passwordConfirm });
     await login(email, password);
   };
 
@@ -30,9 +36,9 @@ export function usePB() {
   };
 
   const OAuthSignIn = async (provider: string) => {
-    const authData = await pb.collection("user").authWithOAuth2({
+    const authData = await pb.collection(Collections.User).authWithOAuth2({
       provider,
-      createData: { ...BaseSignUpData, name: "user" },
+      createData: { ...BaseSignUpData, name: Collections.User },
       query: { expand: EXPAND_USER },
     });
     // after succesful auth we can update the user with a different username from the authData
@@ -44,7 +50,7 @@ export function usePB() {
           formData.append("name", authData.meta.name);
         }
 
-        await pb.collection("user").update(authData.record.id, formData, { expand: EXPAND_USER });
+        await pb.collection(Collections.User).update(authData.record.id, formData, { expand: EXPAND_USER });
       } catch (e) {
         console.error("Could not update name: ", e);
       }

@@ -26,9 +26,8 @@ func (f Field) IsReadOnly() bool { return f.ReadOnly }
 
 type Config struct {
 	FilePath                   string
-	Export                     bool
 	CollectionAdditionalFields map[string][]common.Field
-	SelectOptionsPath          string
+	PrintSelectOptions         bool
 }
 
 func Register(app *pocketbase.PocketBase, cfg Config) {
@@ -63,8 +62,19 @@ func (c *Config) generateTypes(app *pocketbase.PocketBase) error {
 		panic(err)
 	}
 
-	outPath := filepath.Join(strings.Trim(root, "\t\n\r "), c.FilePath)
+	constsPath := filepath.Join(strings.Trim(root, "\t\n\r "), c.FilePath, "pocketbase.ts")
+	fConst, err := os.Create(constsPath)
+	if err != nil {
+		return err
+	}
+	defer fConst.Close()
+	fmt.Fprintf(fConst, "/* This file was automatically generated, changes will be overwritten. */\n\n")
+	fmt.Fprintf(fConst, "import PocketBase, { RecordService } from \"pocketbase\";\n\n")
+	c.printCollectionConstants(fConst, collections)
+	c.printCollectionRecordMap(fConst, collections)
+	printTypedPocketBase(fConst)
 
+	outPath := filepath.Join(strings.Trim(root, "\t\n\r "), c.FilePath, "base.d.ts")
 	f, err := os.Create(outPath)
 	if err != nil {
 		return err
@@ -75,8 +85,8 @@ func (c *Config) generateTypes(app *pocketbase.PocketBase) error {
 
 	c.printBaseType(f)
 
-	if c.SelectOptionsPath != "" {
-		optionsPath := filepath.Join(strings.Trim(root, "\t\n\r "), c.SelectOptionsPath)
+	if c.PrintSelectOptions {
+		optionsPath := filepath.Join(strings.Trim(root, "\t\n\r "), c.FilePath, "select-options.d.ts")
 
 		fOptions, err := os.Create(optionsPath)
 		if err != nil {
@@ -88,7 +98,7 @@ func (c *Config) generateTypes(app *pocketbase.PocketBase) error {
 
 		for _, collection := range collections {
 			if !collection.System {
-				if c.SelectOptionsPath != "" {
+				if c.PrintSelectOptions {
 					c.printCollectionSelectOptions(fOptions, collection)
 				}
 			}
@@ -106,9 +116,6 @@ func (c *Config) generateTypes(app *pocketbase.PocketBase) error {
 }
 
 func (c *Config) printBaseType(f *os.File) {
-	if c.Export {
-		fmt.Fprint(f, "export ")
-	}
 	fmt.Fprint(f, "interface BaseRecord {\n")
 
 	baseFields := []string{"id", "collectionName", "collectionId", "created", "updated"}
@@ -157,13 +164,54 @@ func (c *Config) printCollectionSelectOptions(f *os.File, collection *core.Colle
 	fmt.Fprint(f, "};\n\n")
 }
 
+func printTypedPocketBase(f *os.File) {
+	fmt.Fprintln(f, "export interface TypedPocketBase extends PocketBase {")
+	fmt.Fprintln(f, "  collection<K extends keyof CollectionRecords>(")
+	fmt.Fprintln(f, "    name: K")
+	fmt.Fprintln(f, "  ): RecordService<CollectionRecords[K]>;")
+	fmt.Fprintln(f, "")
+	fmt.Fprintln(f, "  // fallback for dynamic strings")
+	fmt.Fprintln(f, "  collection(name: string): RecordService<any>;")
+	fmt.Fprintln(f, "}")
+	fmt.Fprintln(f, "")
+}
+
+func (c *Config) printCollectionConstants(f *os.File, collections []*core.Collection) {
+	fmt.Fprintln(f, "export const Collections = {")
+	for _, col := range collections {
+		if col.System {
+			continue
+		}
+		fmt.Fprintf(
+			f,
+			"  %s: %q,\n",
+			capitalise(col.Name),
+			col.Name,
+		)
+	}
+	fmt.Fprintf(f, "} as const;\n\n")
+}
+
+func (c *Config) printCollectionRecordMap(f *os.File, collections []*core.Collection) {
+	fmt.Fprintln(f, "export interface CollectionRecords {")
+	for _, col := range collections {
+		if col.System {
+			continue
+		}
+		fmt.Fprintf(
+			f,
+			"  %s: %sRecord;\n",
+			col.Name,
+			capitalise(col.Name),
+		)
+	}
+	fmt.Fprintf(f, "}\n\n")
+}
+
 func (c *Config) printCollectionTypes(f *os.File, collection *core.Collection) {
 	collectionName := capitalise(collection.Name)
 
 	fmt.Fprintf(f, "/* Collection type: %s */\n", collection.Type)
-	if c.Export {
-		fmt.Fprint(f, "export ")
-	}
 	fmt.Fprintf(f, "interface %s {\n", collectionName)
 
 	for _, field := range collection.Fields {
@@ -189,9 +237,6 @@ func (c *Config) printCollectionTypes(f *os.File, collection *core.Collection) {
 
 	fmt.Fprint(f, "}\n\n")
 
-	if c.Export {
-		fmt.Fprint(f, "export ")
-	}
 	fmt.Fprintf(f, "type %sRecord = %s & BaseRecord;\n\n", collectionName, collectionName)
 }
 

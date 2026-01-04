@@ -1,6 +1,5 @@
 import PocketBase from "pocketbase";
 import { createContext } from "solid-js";
-import { TUser } from "../../types";
 
 type PBContextType = {
   pb: PocketBase;
