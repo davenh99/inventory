@@ -1,11 +1,10 @@
 import { Component } from "solid-js";
-import { Button } from "../components";
-import Card from "../views/app/Card";
+import { Button, Card } from "@solidpb/ui-kit";
 import { A } from "@solidjs/router";
 
 const Dashboard: Component = () => {
   return (
-    <div class="flex-1 overflow-y-auto space-y-3 max-w-150 bg-[var(--color-light-background)] dark:bg-[var(--color-dark-background)] text-[var(--color-text-light-primary)] dark:text-[var(--color-dark-primary)]">
+    <div class="flex-1 overflow-y-auto space-y-3 max-w-150 bg-light-background dark:bg-dark-background text-text-light-primary dark:text-dark-primary">
       <Card>
         <h2 class="mb-2 text-center">App for mobile</h2>
         <p>

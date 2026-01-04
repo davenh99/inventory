@@ -1,13 +1,10 @@
 import { ParentComponent } from "solid-js";
 import { A, useLocation } from "@solidjs/router";
-import Log from "lucide-solid/icons/pencil-line";
 import Home from "lucide-solid/icons/home";
 import User from "lucide-solid/icons/user";
 
 export const AppLayout: ParentComponent = (props) => {
   const location = useLocation();
-
-  const isLogActive = () => location.pathname.startsWith("/log");
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
@@ -22,9 +19,9 @@ export const AppLayout: ParentComponent = (props) => {
   const iconClasses = (path: string) => `active:opacity-80 ${isActive(path) ? "text-black" : "text-black"}`;
 
   return (
-    <div class="flex h-screen bg-black text-white">
+    <div class="flex h-screen">
       {/* Sidebar (desktop global nav) */}
-      <nav class="hidden sm:flex  flex-col items-start bg-black py-4 space-y-6">
+      <nav class="hidden sm:flex  flex-col items-start py-4 space-y-6">
         <A href="/" class={linkClasses("/")}>
           <Home size={24} class={iconClasses("/")} />
           <p class="hidden sm:flex">Home</p>

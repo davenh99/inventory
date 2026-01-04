@@ -27,7 +27,7 @@ export const PBProvider: ParentComponent = (props) => {
     if (pb.authStore.token) {
       if (pb.authStore.isValid) {
         try {
-          await pb.collection("users").authRefresh({ expand: EXPAND_USER });
+          await pb.collection("user").authRefresh({ expand: EXPAND_USER });
           setPBStore("networkError", false);
         } catch (e) {
           if (e instanceof ClientResponseError && [401, 403].includes(e.status)) {
@@ -51,7 +51,7 @@ export const PBProvider: ParentComponent = (props) => {
   createEffect(() => {
     if (!pb.authStore.record?.id) return;
 
-    const unsubscribe = pb.collection("users").subscribe(pb.authStore.record.id, (e) => {
+    const unsubscribe = pb.collection("user").subscribe(pb.authStore.record.id, (e) => {
       if (e.action == "delete") {
         pb.authStore.clear();
       } else {

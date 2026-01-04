@@ -2,7 +2,7 @@ import { Component } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 
 import { usePB } from "../../config/pocketbase";
-import { Button } from "../../components";
+import { Button } from "@solidpb/ui-kit";
 
 interface Props {
   name: string;

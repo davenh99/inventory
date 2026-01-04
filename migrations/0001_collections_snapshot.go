@@ -1084,12 +1084,12 @@ func init() {
 				],
 				"id": "pbc_1885662682",
 				"indexes": [],
-				"listRule": null,
+				"listRule": "",
 				"name": "role",
 				"system": false,
 				"type": "base",
 				"updateRule": null,
-				"viewRule": null
+				"viewRule": ""
 			},
 			{
 				"createRule": null,
@@ -1201,12 +1201,12 @@ func init() {
 				],
 				"id": "pbc_519676474",
 				"indexes": [],
-				"listRule": null,
+				"listRule": "",
 				"name": "permission",
 				"system": false,
 				"type": "base",
 				"updateRule": null,
-				"viewRule": null
+				"viewRule": ""
 			}
 		]`
 

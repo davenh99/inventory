@@ -17,11 +17,11 @@ export function usePB() {
   const { pb } = context;
 
   const login = async (usernameOrEmail: string, password: string) => {
-    await pb.collection("users").authWithPassword(usernameOrEmail, password, { expand: EXPAND_USER });
+    await pb.collection("user").authWithPassword(usernameOrEmail, password, { expand: EXPAND_USER });
   };
 
   const signUp = async (email: string, name: string, password: string, passwordConfirm: string) => {
-    await pb.collection("users").create({ ...BaseSignUpData, name, email, password, passwordConfirm });
+    await pb.collection("user").create({ ...BaseSignUpData, name, email, password, passwordConfirm });
     await login(email, password);
   };
 
@@ -30,7 +30,7 @@ export function usePB() {
   };
 
   const OAuthSignIn = async (provider: string) => {
-    const authData = await pb.collection("users").authWithOAuth2({
+    const authData = await pb.collection("user").authWithOAuth2({
       provider,
       createData: { ...BaseSignUpData, name: "user" },
       query: { expand: EXPAND_USER },
@@ -44,7 +44,7 @@ export function usePB() {
           formData.append("name", authData.meta.name);
         }
 
-        await pb.collection("users").update(authData.record.id, formData, { expand: EXPAND_USER });
+        await pb.collection("user").update(authData.record.id, formData, { expand: EXPAND_USER });
       } catch (e) {
         console.error("Could not update name: ", e);
       }

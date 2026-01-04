@@ -1,6 +1,6 @@
 import { Component, createSignal, Show, JSX } from "solid-js";
 import { usePB } from "../../config/pocketbase";
-import { Button, Input } from "../../components";
+import { Button, Card, Input } from "@solidpb/ui-kit";
 import { useNavigate } from "@solidjs/router";
 
 const AuthEmail: Component = () => {
@@ -32,10 +32,8 @@ const AuthEmail: Component = () => {
 
   return (
     <>
-      <h2 class="mb-5">Sign in</h2>
-
       <Show when={error()}>
-        <div class="text-light-error dark:text-dark-error">{error()}</div>
+        <p class="text-error">{error()}</p>
       </Show>
 
       <form onSubmit={handleSubmit} class="flex flex-col items-center w-full">
@@ -43,7 +41,7 @@ const AuthEmail: Component = () => {
           required
           name="email"
           label="Email or username"
-          class="w-[95%] mb-2"
+          class="mb-2 w-full"
           value={email()}
           onChange={setEmail}
           inputProps={{ type: "text" }}
@@ -53,13 +51,13 @@ const AuthEmail: Component = () => {
           required
           label="Password"
           name="password"
-          class="w-[95%]"
+          class="w-full"
           value={password()}
           onChange={setPassword}
           inputProps={{ type: "password" }}
         />
 
-        <Button type="submit" appearance="primary" class="w-[95%] mt-6 mb-2" disabled={isLoading()}>
+        <Button type="submit" appearance="primary" modifier="block" class="mt-4 mb-2" disabled={isLoading()}>
           {isLoading() ? "Logging in..." : "Login"}
         </Button>
       </form>

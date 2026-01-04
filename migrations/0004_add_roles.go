@@ -18,6 +18,7 @@ func init() {
 		}
 
 		record := core.NewRecord(roles)
+		record.Id = "0000000000admin"
 		record.Set("name", "admin")
 		record.Set("permissions+", permission.Id)
 
