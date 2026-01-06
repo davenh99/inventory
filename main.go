@@ -32,13 +32,22 @@ func main() {
 
 	computedfields.Register(app, computedfields.Config{})
 
+	migrationsDir := "./migrations"
+	if env.Env == "development" {
+		migrationsDir = "../migrations"
+	}
+
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: env.Env == "development",
+		Dir:         migrationsDir,
 	})
 
 	changelog.Register(app, changelog.Config{
 		Collections: map[string][]string{
-			"users": {"name"},
+			"user":           {"name"},
+			"supplierPrice":  {"price", "discount"},
+			"sellPrice":      {"priceSellSquare", "syncState"},
+			"productVariant": {"syncState"},
 		},
 	})
 
