@@ -2,16 +2,9 @@ name: product
 type: base
 inherit: pbc_prod000000
 
-{
-					"cascadeDelete": false,
-					"collectionId": "pbc_4179629510",
-					"hidden": false,
-					"id": "relation164705970",
-					"maxSelect": 1,
-					"minSelect": 0,
-					"name": "pricingRule",
-					"presentable": false,
-					"required": false,
-					"system": false,
-					"type": "relation"
-				},
+fields:
+  - name: pricingRule
+    type: relation
+    collectionId: pbc_pricingrul
+    minSelect: 0
+    maxSelect: 1

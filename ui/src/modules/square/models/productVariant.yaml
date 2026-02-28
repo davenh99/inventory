@@ -1,0 +1,13 @@
+name: productVariant
+type: base
+inherit: pbc_prodvar000
+
+fields:
+  - name: squareItemVariation
+    type: text
+
+  - name: sellPriceSquare
+    type: number
+
+  - name: squareLastSync
+    type: date

@@ -20,9 +20,6 @@ fields:
   - name: ratio
     type: number
 
-  - name: rounding
-    type: number
-
   - name: referenceUom
     type: bool
 

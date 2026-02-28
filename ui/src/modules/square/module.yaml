@@ -6,3 +6,7 @@ depends:
   - inventory
   - sale
   - purchase
+models:
+  - product
+  - productVariant
+  - squareConfig

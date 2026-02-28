@@ -1,0 +1,7 @@
+name: product
+type: base
+inherit: pbc_prod000000
+
+fields:
+  - name: sellPrice
+    type: number

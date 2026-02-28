@@ -4,3 +4,7 @@ description: Sale module
 depends:
   - base
   - inventory
+models:
+  - product
+  - productVariant
+  - productAttributeValue

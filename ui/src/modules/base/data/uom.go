@@ -18,18 +18,17 @@ func init() {
 			Name         string  `json:"name"`
 			Category     string  `json:"category"`
 			Ratio        float64 `json:"ratio"`
-			Rounding     float64 `json:"rounding"`
 			ReferenceUom bool    `json:"referenceUom"`
 			Active       bool    `json:"active"`
 		}
 
 		data := []UOM{
-			{Name: "Unit", Category: "unit", Ratio: 1, Rounding: 2, ReferenceUom: true, Active: true},
-			{Name: "Box of 10", Category: "unit", Ratio: 10, Rounding: 2, Active: true},
-			{Name: "L", Category: "volume", Ratio: 1, Rounding: 2, ReferenceUom: true, Active: true},
-			{Name: "mL", Category: "volume", Ratio: 0.001, Rounding: 2, Active: true},
-			{Name: "kg", Category: "weight", Ratio: 1, Rounding: 2, ReferenceUom: true, Active: true},
-			{Name: "g", Category: "weight", Ratio: 0.001, Rounding: 2, Active: true},
+			{Name: "Unit", Category: "unit", Ratio: 1, ReferenceUom: true, Active: true},
+			{Name: "Box of 10", Category: "unit", Ratio: 10, Active: true},
+			{Name: "L", Category: "volume", Ratio: 1, ReferenceUom: true, Active: true},
+			{Name: "mL", Category: "volume", Ratio: 0.001, Active: true},
+			{Name: "kg", Category: "weight", Ratio: 1, ReferenceUom: true, Active: true},
+			{Name: "g", Category: "weight", Ratio: 0.001, Active: true},
 		}
 
 		for _, name := range data {
@@ -38,7 +37,6 @@ func init() {
 			record.Set("name", name.Name)
 			record.Set("category", name.Category)
 			record.Set("ratio", name.Ratio)
-			record.Set("rounding", name.Rounding)
 			record.Set("referenceUom", name.ReferenceUom)
 			record.Set("active", name.Active)
 

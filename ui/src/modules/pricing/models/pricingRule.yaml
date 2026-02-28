@@ -1,3 +1,21 @@
 name: pricingRule
 type: base
 id: pbc_pricingrul
+
+fields:
+  - name: name
+    type: text
+    max: 255
+    required: true
+
+  - name: margin
+    type: number
+
+  - name: overhead
+    type: number
+
+  - name: default
+    type: boolean
+
+  - name: tax
+    type: number

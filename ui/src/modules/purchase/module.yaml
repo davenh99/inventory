@@ -4,3 +4,5 @@ description: Purchase module
 depends:
   - base
   - inventory
+models:
+  - supplierPrice
