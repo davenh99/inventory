@@ -1,0 +1,15 @@
+name: role
+type: base
+id: pbc_role000000
+
+fields:
+  - name: name
+    type: text
+    max: 255
+    required: true
+
+  - name: permissions
+    maxSelect: 999
+    minSelect: 0
+    type: relation
+    collectionId: pbc_permission

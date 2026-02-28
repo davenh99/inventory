@@ -1,0 +1,20 @@
+name: productAttributeValue
+type: base
+id: pbc_prodattval
+
+fields:
+  - name: product
+    type: relation
+    collectionId: pbc_prod00000
+    minSelect: 0
+    maxSelect: 1
+
+  - name: active
+    type: bool
+
+  - name: attributeValue
+    type: relation
+    collectionId: pbc_attributev
+    minSelect: 0
+    maxSelect: 1
+    required: true

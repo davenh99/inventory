@@ -1,0 +1,22 @@
+name: productCategory
+type: base
+id: pbc_prodcateg0
+
+fields:
+  - name: name
+    type: text
+    max: 255
+
+  - name: active
+    type: bool
+
+  - name: parent
+    maxSelect: 1
+    type: relation
+    collectionId: pbc_prodcateg0
+
+createRule: ""
+deleteRule: ""
+updateRule: ""
+viewRule: ""
+listRule: ""

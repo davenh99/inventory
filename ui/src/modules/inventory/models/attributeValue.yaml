@@ -1,0 +1,19 @@
+name: attributeValue
+type: base
+id: pbc_attributev
+
+fields:
+  - name: name
+    type: text
+    max: 255
+    required: true
+
+  - name: active
+    type: bool
+
+  - name: attribute
+    type: relation
+    minSelect: 0
+    maxSelect: 1
+    collectionId: pbc_attribute0
+    required: true

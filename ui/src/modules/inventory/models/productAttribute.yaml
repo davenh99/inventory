@@ -1,0 +1,20 @@
+name: productCategory
+type: base
+id: pbc_category00
+
+fields:
+  - name: active
+    type: bool
+
+  - name: attribute
+    type: relation
+    collectionId: pbc_attribute0
+    minSelect: 0
+    maxSelect: 1
+
+  - name: product
+    type: relation
+    collectionId: pbc_prod00000
+    minSelect: 0
+    maxSelect: 1
+    required: true

@@ -1,0 +1,21 @@
+name: changelogDiff
+type: base
+id: pbc_changelogd
+
+fields:
+  - name: changelog
+    type: relation
+    collectionId: pbc_changelog0
+    maxSelect: 1
+    minSelect: 0
+    required: true
+
+  - name: field
+    type: text
+    required: true
+
+  - name: valueOld
+    type: text
+
+  - name: valueNew
+    type: text

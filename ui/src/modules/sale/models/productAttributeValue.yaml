@@ -1,0 +1,16 @@
+name: productAttributeValue
+type: base
+inherit: pbc_prodattval
+
+{
+					"hidden": false,
+					"id": "number2894700736",
+					"max": null,
+					"min": null,
+					"name": "priceExtra",
+					"onlyInt": false,
+					"presentable": false,
+					"required": false,
+					"system": false,
+					"type": "number"
+				},

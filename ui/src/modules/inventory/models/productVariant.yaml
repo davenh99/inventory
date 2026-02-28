@@ -1,0 +1,22 @@
+name: productVariant
+type: base
+id: pbc_prodvar000
+
+fields:
+  - name: sku
+    type: text
+
+  - name: name:
+    type: text
+    max: 255
+    required: true
+
+  - name: product
+    type: relation
+    collectionId: pbc_prod000000
+    minSelect: 0
+    maxSelect: 1
+    required: true
+
+  - name: active
+    type: bool

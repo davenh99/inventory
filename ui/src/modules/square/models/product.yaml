@@ -1,0 +1,18 @@
+name: product
+type: base
+inherit: pbc_prod000000
+
+{
+					"autogeneratePattern": "",
+					"hidden": false,
+					"id": "text1493719061",
+					"max": 0,
+					"min": 0,
+					"name": "squareItem",
+					"pattern": "",
+					"presentable": false,
+					"primaryKey": false,
+					"required": false,
+					"system": false,
+					"type": "text"
+				},

@@ -1,5 +1,4 @@
-/* @refresh reload */
-import { ErrorBoundary, lazy, Show } from "solid-js";
+import { lazy, Show } from "solid-js";
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
 import { toaster } from "@kobalte/core/toast";
@@ -12,9 +11,6 @@ import LoadFullScreen from "./views/app/LoadFullScreen";
 import SiteLayout from "./views/app/SiteLayout";
 import Dashboard from "./routes/Dashboard";
 import Unauthorised from "./routes/Unauthorised";
-import { Toaster } from "./config/toaster";
-import { Toast } from "./config/toaster/";
-import ProtectedRoute from "./config/role/ProtectedRoute";
 import { IGNORE_ERRORS } from "../constants";
 
 const NotFound = lazy(() => import("./routes/NotFound"));
@@ -24,7 +20,7 @@ const root = document.getElementById("root");
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
-    "Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?"
+    "Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?",
   );
 }
 
@@ -50,21 +46,14 @@ console.error = (...args) => {
 
 render(
   () => (
-    // <ErrorBoundary
-    //   fallback={(err) => {
-    //     toaster.show((props) => <Toast {...props} title="App Error" msg={String(err.message ?? err)} />);
-    //     return null;
-    //   }}
-    // >
     <PBProvider>
       <ThemeProvider>
         <Content />
         <Toaster />
       </ThemeProvider>
     </PBProvider>
-    // </ErrorBoundary>
   ),
-  root!
+  root!,
 );
 
 function Content() {
@@ -87,14 +76,7 @@ function Content() {
 function App() {
   return (
     <Route path="/" component={AppLayout}>
-      <Route
-        path="/"
-        component={() => (
-          <ProtectedRoute roles={["admin"]}>
-            <Dashboard />
-          </ProtectedRoute>
-        )}
-      />
+      <Route path="/" component={() => <Dashboard />} />
       <Route path="/unauthorized" component={Unauthorised} />
     </Route>
   );

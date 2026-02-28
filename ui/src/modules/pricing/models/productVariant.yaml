@@ -1,0 +1,9 @@
+name: productVariant
+type: base
+inherit: pbc_prodvar000
+
+# i.e.
+fields:
+  - name: computedPrice
+    type: number
+    readOnly: true

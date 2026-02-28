@@ -1,0 +1,9 @@
+name: partner
+type: base
+id: pbc_partner000
+
+fields:
+  - name: name
+    type: text
+    max: 255
+    required: true

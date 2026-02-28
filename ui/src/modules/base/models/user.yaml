@@ -1,0 +1,49 @@
+name: user
+type: auth
+id: _pb_users_auth_
+
+fields:
+  - name: avatar
+    type: file
+    maxSelect: 1
+
+  - name: name
+    type: text
+    max: 255
+    required: true
+
+  - name: verified
+    type: bool
+    system: true
+
+  - name: emailVisibility
+    type: bool
+    system: true
+
+  - name: email
+    type: email
+    system: true
+    required: true
+
+  - name: tokenKey
+    type: text
+    system: true
+    required: true
+
+  - name: password
+    type: password
+    system: true
+    required: true
+    min: 8
+
+  - name: role
+    type: relation
+    collectionId: pbc_role000000
+    required: true
+
+deleteRule: "id = @request.auth.id"
+updateRule: "id = @request.auth.id"
+
+indexes:
+  - "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `user`(`tokenKey`)"
+  - "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `user`(`email`) WHERE `email` != ''"

@@ -1,0 +1,30 @@
+name: changelog
+type: base
+id: pbc_changelog0
+
+fields:
+  - name: collectionId
+    type: text
+    required: true
+
+  - name: recordId
+    type: text
+    required: true
+
+  - name: changeType
+    type: select
+    required: true
+    values:
+      - create
+      - update
+      - delete
+
+  - name: changedBy
+    type: relation
+    collectionId: _pb_users_auth_
+    maxSelect: 1
+    minSelect: 0
+    required: true
+
+  - name: reason
+    type: text

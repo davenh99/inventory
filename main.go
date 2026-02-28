@@ -1,16 +1,16 @@
 package main
 
 import (
-	"app/plugins/changelog"
-	"app/plugins/computedfields"
-	"app/plugins/gentypes"
-	"app/plugins/roles"
+	"app/ui/src/modules/base/hooks/changelog"
+	"app/ui/src/modules/base/hooks/role"
 	"app/utils"
 	"embed"
 	"io/fs"
 	"log"
 	"net/http"
 
+	computedfields "github.com/davenh99/pb-computedfields"
+	"github.com/davenh99/pb-typescript/gentypes"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
@@ -51,14 +51,14 @@ func main() {
 		},
 	})
 
-	roles.Register(app, roles.Config{
+	role.Register(app, role.Config{
 		App: app,
-		SkipCollectionRules: map[string]*roles.SkipRules{
+		SkipCollectionRules: map[string]*role.SkipRules{
 			"user":          nil,
-			"changelog":     nil,
-			"changelogDiff": nil,
-			"role":          nil,
-			"permission":    nil,
+			"changelog":     nil, // TODO make sure list and view allowed, maybe check if auth is not null?
+			"changelogDiff": nil, // TODO make sure list and view allowed, maybe check if auth is not null?
+			"role":          nil, // TODO make sure list and view allowed, maybe check if auth is not null?
+			"permission":    nil, // TODO make sure list and view allowed, maybe check if auth is not null?
 		},
 	})
 

@@ -1,0 +1,8 @@
+name: pricing
+version: 0.1.0
+description: Pricing module
+depends:
+  - base
+  - inventory
+  - sale
+  - purchase

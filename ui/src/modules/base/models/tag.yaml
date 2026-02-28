@@ -1,0 +1,11 @@
+name: tag
+type: base
+id: pbc_tag0000000
+
+fields:
+  - name: name
+    type: text
+    max: 255
+
+  - name: colorHex
+    type: text

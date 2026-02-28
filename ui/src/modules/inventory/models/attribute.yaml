@@ -1,0 +1,12 @@
+name: attribute
+type: base
+id: pbc_attribute0
+
+fields:
+  - name: name
+    type: text
+    max: 255
+    required: true
+
+  - name: active
+    type: bool
