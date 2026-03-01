@@ -47,10 +47,8 @@ func main() {
 
 	changelog.Register(app, changelog.Config{
 		Collections: map[string][]string{
-			"user":           {"name"},
-			"supplierPrice":  {"price", "discount"},
-			"sellPrice":      {"priceSellSquare", "syncState"},
-			"productVariant": {"syncState"},
+			"user":          {"name"},
+			"supplierPrice": {"price", "discount"},
 		},
 	})
 

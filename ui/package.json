@@ -17,12 +17,12 @@
     "vite-plugin-solid": "^2.11.6"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "^1.7.4",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@kobalte/core": "^0.13.10",
     "@solidjs/router": "^0.15.3",
-    "@solidpb/ui-kit": "^0.1.1",
+    "@solidpb/ui-kit": "^0.2.0",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/solid-table": "^8.21.3",
     "@tanstack/solid-virtual": "^3.13.13",

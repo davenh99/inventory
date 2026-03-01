@@ -12,5 +12,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ["@solidpb/ui-kit"],
+    include: ["bind-event-listener"],
   },
 });

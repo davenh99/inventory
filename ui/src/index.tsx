@@ -12,6 +12,7 @@ import SiteLayout from "./views/app/SiteLayout";
 import Dashboard from "./routes/Dashboard";
 import Unauthorised from "./routes/Unauthorised";
 import { IGNORE_ERRORS } from "../constants";
+import { Toast, Toaster } from "@solidpb/ui-kit";
 
 const NotFound = lazy(() => import("./routes/NotFound"));
 const Auth = lazy(() => import("./routes/Auth"));
@@ -26,13 +27,13 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 window.onerror = (msg) => {
   if (!IGNORE_ERRORS.includes(String(msg))) {
-    toaster.show((props) => <Toast {...props} variant="error" title="JS Error" msg={String(msg)} />);
+    toaster.show((props) => <Toast {...props} appearance="error" title="JS Error" msg={String(msg)} />);
   }
 };
 
 window.onunhandledrejection = (event) => {
   toaster.show((props) => (
-    <Toast {...props} variant="error" title="Unhandled Promise" msg={String(event.reason)} />
+    <Toast {...props} appearance="error" title="Unhandled Promise" msg={String(event.reason)} />
   ));
 };
 
@@ -40,7 +41,7 @@ const originalConsoleError = console.error;
 console.error = (...args) => {
   originalConsoleError(...args);
   toaster.show((props) => (
-    <Toast {...props} variant="error" title="Error" msg={args.map(String).join(" ")} />
+    <Toast {...props} appearance="error" title="Error" msg={args.map(String).join(" ")} />
   ));
 };
 
