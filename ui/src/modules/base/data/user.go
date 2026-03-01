@@ -28,6 +28,7 @@ func init() {
 		record.Set("email", utils.Env.AdminName)
 		record.Set("password", utils.Env.AdminPassword)
 		record.Set("role", "0000000000admin")
+		record.Set("name", "admin")
 
 		return app.Save(record)
 	}, func(app core.App) error {

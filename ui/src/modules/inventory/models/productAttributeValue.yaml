@@ -5,7 +5,7 @@ id: pbc_prodattval
 fields:
   - name: product
     type: relation
-    collectionId: pbc_prod00000
+    collectionId: pbc_prod000000
     minSelect: 0
     maxSelect: 1
 
@@ -18,3 +18,13 @@ fields:
     minSelect: 0
     maxSelect: 1
     required: true
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

@@ -26,6 +26,10 @@ fields:
     required: true
 
   - name: tokenKey
+    autogeneratePattern: "[a-zA-Z0-9]{50}"
+    hidden: true
+    min: 30
+    max: 60
     type: text
     system: true
     required: true
@@ -34,12 +38,23 @@ fields:
     type: password
     system: true
     required: true
+    hidden: true
     min: 8
 
   - name: role
     type: relation
     collectionId: pbc_role000000
     required: true
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true
 
 deleteRule: "id = @request.auth.id"
 updateRule: "id = @request.auth.id"

@@ -7,3 +7,13 @@ fields:
     type: text
     max: 255
     required: true
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

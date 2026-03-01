@@ -13,3 +13,13 @@ fields:
     minSelect: 0
     type: relation
     collectionId: pbc_permission
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

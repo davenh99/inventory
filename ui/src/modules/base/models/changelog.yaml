@@ -3,13 +3,12 @@ type: base
 id: pbc_changelog0
 
 fields:
-  - name: collectionId
+  - name: collection
     type: text
     required: true
 
-  - name: recordId
+  - name: record
     type: text
-    required: true
 
   - name: changeType
     type: select
@@ -24,7 +23,16 @@ fields:
     collectionId: _pb_users_auth_
     maxSelect: 1
     minSelect: 0
-    required: true
 
   - name: reason
     type: text
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

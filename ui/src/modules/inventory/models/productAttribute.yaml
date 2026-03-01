@@ -1,6 +1,6 @@
-name: productCategory
+name: productAttribute
 type: base
-id: pbc_category00
+id: pbc_prodattr00
 
 fields:
   - name: active
@@ -14,7 +14,17 @@ fields:
 
   - name: product
     type: relation
-    collectionId: pbc_prod00000
+    collectionId: pbc_prod000000
     minSelect: 0
     maxSelect: 1
     required: true
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

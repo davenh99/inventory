@@ -1,6 +1,6 @@
 name: productVariant
 type: base
-inherit: pbc_prodvar000
+id: pbc_prodvar000
 
 # might avoid this, maybe just register a computed field in the hooks
 fields:

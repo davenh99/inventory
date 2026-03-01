@@ -11,6 +11,5 @@
     "noEmit": true,
     "isolatedModules": true,
     "strict": true
-  },
-  "include": ["src", "types", "constants.ts", "types.d.ts", "base.d.ts", "pocketbase.ts"]
+  }
 }

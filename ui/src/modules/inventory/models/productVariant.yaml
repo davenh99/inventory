@@ -6,7 +6,7 @@ fields:
   - name: sku
     type: text
 
-  - name: name:
+  - name: name
     type: text
     max: 255
     required: true
@@ -20,3 +20,13 @@ fields:
 
   - name: active
     type: bool
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

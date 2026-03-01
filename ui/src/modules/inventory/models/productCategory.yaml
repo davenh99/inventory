@@ -15,8 +15,12 @@ fields:
     type: relation
     collectionId: pbc_prodcateg0
 
-createRule: ""
-deleteRule: ""
-updateRule: ""
-viewRule: ""
-listRule: ""
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

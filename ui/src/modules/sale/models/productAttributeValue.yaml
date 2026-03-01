@@ -1,6 +1,6 @@
 name: productAttributeValue
 type: base
-inherit: pbc_prodattval
+id: pbc_prodattval
 
 fields:
   - name: priceExtra

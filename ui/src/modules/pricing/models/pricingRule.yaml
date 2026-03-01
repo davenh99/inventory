@@ -15,7 +15,17 @@ fields:
     type: number
 
   - name: default
-    type: boolean
+    type: bool
 
   - name: tax
     type: number
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true

@@ -1,4 +1,4 @@
-name: productCategory
+name: product
 type: base
 id: pbc_prod000000
 
@@ -47,3 +47,13 @@ fields:
     minSelect: 0
     maxSelect: 999
     collectionId: pbc_tag0000000
+
+  - name: created
+    type: autodate
+    onCreate: true
+    onUpdate: false
+
+  - name: updated
+    type: autodate
+    onCreate: true
+    onUpdate: true
