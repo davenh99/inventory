@@ -9,13 +9,14 @@ import { ThemeProvider } from "./config/theme";
 import AppLayout from "./views/app/AppLayout";
 import LoadFullScreen from "./views/app/LoadFullScreen";
 import SiteLayout from "./views/app/SiteLayout";
-import Dashboard from "./routes/Dashboard";
 import Unauthorised from "./routes/Unauthorised";
 import { IGNORE_ERRORS } from "../constants";
 import { Toast, Toaster } from "@solidpb/ui-kit";
 
 const NotFound = lazy(() => import("./routes/NotFound"));
 const Auth = lazy(() => import("./routes/Auth"));
+const Dashboard = lazy(() => import("./routes/Dashboard"));
+const Settings = lazy(() => import("./routes/Settings"));
 
 const root = document.getElementById("root");
 
@@ -77,7 +78,8 @@ function Content() {
 function App() {
   return (
     <Route path="/" component={AppLayout}>
-      <Route path="/" component={() => <Dashboard />} />
+      <Route path="/" component={Dashboard} />
+      <Route path="/settings" component={Settings} />
       <Route path="/unauthorized" component={Unauthorised} />
     </Route>
   );

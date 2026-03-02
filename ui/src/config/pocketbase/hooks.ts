@@ -1,6 +1,5 @@
 import { useContext } from "solid-js";
 import { PBContext } from "./context";
-import { ClientResponseError } from "pocketbase";
 
 import { EXPAND_USER } from "../../../constants";
 import { Collections } from "../../../pocketbase";
@@ -70,22 +69,5 @@ export function useAuthPB() {
     throw new Error("User not authenticated");
   }
 
-  const updateRecord = async <T>(collectionName: string, recordID: string, field: string, newVal: any) => {
-    const data: any = {};
-    data[`${field}`] = newVal;
-
-    try {
-      const record = await pb
-        .collection<T>(collectionName)
-        .update(recordID, data, { requestKey: `${collectionName}.${recordID}.${field}` });
-      return record as T;
-    } catch (e) {
-      if (e instanceof ClientResponseError && e.isAbort) {
-      } else {
-        throw e;
-      }
-    }
-  };
-
-  return { pb, user, logout, updateRecord };
+  return { pb, user, logout };
 }

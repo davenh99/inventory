@@ -1,16 +1,17 @@
 import { Component } from "solid-js";
 import { A } from "@solidjs/router";
 
-import { Container, Link } from "@solidpb/ui-kit";
+import { Link } from "@solidpb/ui-kit";
+import SiteLayout from "../views/app/SiteLayout";
 
 const NotFound: Component = () => {
   return (
-    <Container>
-      <h2 class="">You appear to be lost</h2>
-      <Link as={A} href="/" class="underline">
+    <SiteLayout>
+      <h2 class="text-center text-2xl">You appear to be lost</h2>
+      <Link as={A} href="/" class="underline block text-center">
         take me back home
       </Link>
-    </Container>
+    </SiteLayout>
   );
 };
 

@@ -1,8 +1,8 @@
-import PocketBase from "pocketbase";
 import { createContext } from "solid-js";
+import { TypedPocketBase } from "../../../pocketbase";
 
 type PBContextType = {
-  pb: PocketBase;
+  pb: TypedPocketBase;
   store: { user: TUser | null; loading: boolean; networkError: boolean };
   checkAuth: () => Promise<void>;
 };

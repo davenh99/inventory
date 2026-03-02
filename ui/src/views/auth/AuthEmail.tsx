@@ -1,6 +1,6 @@
 import { Component, createSignal, Show, JSX } from "solid-js";
 import { usePB } from "../../config/pocketbase";
-import { Button, Card, Input } from "@solidpb/ui-kit";
+import { Button, Input } from "@solidpb/ui-kit";
 import { useNavigate } from "@solidjs/router";
 
 const AuthEmail: Component = () => {
@@ -57,7 +57,7 @@ const AuthEmail: Component = () => {
           inputProps={{ type: "password" }}
         />
 
-        <Button type="submit" appearance="primary" modifier="block" class="mt-4 mb-2" disabled={isLoading()}>
+        <Button type="submit" appearance="primary" modifier="block" class="mt-2" disabled={isLoading()}>
           {isLoading() ? "Logging in..." : "Login"}
         </Button>
       </form>

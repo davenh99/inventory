@@ -1,15 +1,16 @@
 import { ParentComponent } from "solid-js";
-import Home from "lucide-solid/icons/home";
+import { A } from "@solidjs/router";
+import Package from "lucide-solid/icons/package";
 import DrawOpen from "lucide-solid/icons/panel-left-open";
 import DrawClose from "lucide-solid/icons/panel-left-close";
-import User from "lucide-solid/icons/user";
 import Settings from "lucide-solid/icons/settings";
 import LogOut from "lucide-solid/icons/log-out";
 import { Avatar, Container, Drawer, DropdownMenu, Navbar } from "@solidpb/ui-kit";
+
 import { useAuthPB } from "../../config/pocketbase";
 
 export const AppLayout: ParentComponent = (props) => {
-  const { user } = useAuthPB();
+  const { user, logout } = useAuthPB();
 
   return (
     <Drawer id="app-drawer">
@@ -20,7 +21,9 @@ export const AppLayout: ParentComponent = (props) => {
               <DrawOpen size="24" />
             </Drawer.Trigger>
             <Navbar.Brand>
-              <Home size={24} />
+              <A href="/" class="flex flex-row gap-1">
+                <Package size={24} /> Inventory
+              </A>
             </Navbar.Brand>
           </div>
           <Navbar.Profile>
@@ -30,16 +33,11 @@ export const AppLayout: ParentComponent = (props) => {
               </DropdownMenu.Trigger>
               <DropdownMenu.Content size="sm" class="min-w-50">
                 <DropdownMenu.MenuItem onSelect={() => {}}>
-                  <a class="justify-between">
-                    <span>Profile</span> <User class="w-[1em] h-[1em]" />
-                  </a>
-                </DropdownMenu.MenuItem>
-                <DropdownMenu.MenuItem onSelect={() => {}}>
-                  <a class="justify-between">
+                  <a class="justify-between" href="/settings">
                     <span>Settings</span> <Settings class="w-[1em] h-[1em]" />
                   </a>
                 </DropdownMenu.MenuItem>
-                <DropdownMenu.MenuItem onSelect={() => {}}>
+                <DropdownMenu.MenuItem onSelect={logout}>
                   <a class="justify-between">
                     <span>Logout</span> <LogOut class="w-[1em] h-[1em]" />
                   </a>
@@ -58,7 +56,7 @@ export const AppLayout: ParentComponent = (props) => {
           <DrawClose size="24" class="is-drawer-close:hidden" />
         </Drawer.Trigger>
         <Drawer.Menu>
-          <Drawer.MenuItem icon={<Home />} label="Home" />
+          <Drawer.MenuItem icon={<Package />} label="Home" />
         </Drawer.Menu>
       </Drawer.Drawer>
     </Drawer>
