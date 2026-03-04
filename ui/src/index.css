@@ -1,10 +1,10 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: emerald --default, dracula --prefersdark;
+  themes:
+    emerald --default,
+    dracula --prefersdark;
 }
 @source "../node_modules/@solidpb/ui-kit";
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @font-face {
   font-family: "Rubik";

@@ -126,6 +126,10 @@ interface Product {
   description: string; // text
   image: string; // file
   tags: string[]; // relation
+  sellPrice: number; // number
+  pricingRule: string; // relation
+  squareItem: string; // text
+  squareLastSync: string; // date
 }
 type ProductRecord = Product & BaseRecord;
 type ProductUpdatePayload = Partial<ProductRecord>;
@@ -144,6 +148,7 @@ interface ProductAttributeValue {
   product: string; // relation
   active: boolean; // bool
   attributeValue: string; // relation
+  priceExtra: number; // number
 }
 type ProductAttributeValueRecord = ProductAttributeValue & BaseRecord;
 type ProductAttributeValueUpdatePayload = Partial<ProductAttributeValueRecord>;
@@ -154,6 +159,10 @@ interface ProductVariant {
   name: string; // text
   product: string; // relation
   active: boolean; // bool
+  sellPrice: number; // number
+  squareItemVariation: string; // text
+  sellPriceSquare: number; // number
+  squareLastSync: string; // date
 }
 type ProductVariantRecord = ProductVariant & BaseRecord;
 type ProductVariantUpdatePayload = Partial<ProductVariantRecord>;
@@ -181,11 +190,4 @@ interface PricingRule {
 }
 type PricingRuleRecord = PricingRule & BaseRecord;
 type PricingRuleUpdatePayload = Partial<PricingRuleRecord>;
-
-/* Collection type: base */
-interface SquareConfig {
-  url: string; // text
-}
-type SquareConfigRecord = SquareConfig & BaseRecord;
-type SquareConfigUpdatePayload = Partial<SquareConfigRecord>;
 

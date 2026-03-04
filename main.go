@@ -1,7 +1,6 @@
 package main
 
 import (
-	pbmodules "app/core"
 	"app/ui/src/modules/base/hooks/changelog"
 	"app/ui/src/modules/base/hooks/role"
 	"app/utils"
@@ -9,8 +8,6 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-
-	_ "app/migrations"
 
 	computedfields "github.com/davenh99/pb-computedfields"
 	"github.com/davenh99/pb-typescript/gentypes"
@@ -20,6 +17,13 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/ghupdate"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
+
+	_ "app/ui/src/modules/base/migrations"
+	_ "app/ui/src/modules/inventory/migrations"
+	_ "app/ui/src/modules/pricing/migrations"
+	_ "app/ui/src/modules/purchase/migrations"
+	_ "app/ui/src/modules/sale/migrations"
+	_ "app/ui/src/modules/square/migrations"
 )
 
 var Version = "dev"
@@ -30,19 +34,20 @@ var embeddedFiles embed.FS
 func main() {
 	env := utils.Env
 
-	if env.Env == "development" {
-		pbmodules.GenerateMigrations(pbmodules.Config{
-			ModulesDir:    "../ui/src/modules",
-			MigrationsDir: "../migrations",
-		})
-	}
+	// if env.Env == "development" {
+	// 	pbmodules.GenerateMigrations(pbmodules.Config{
+	// 		ModulesDir:     "../ui/src/modules",
+	// 		MigrationsDir:  "../migrations",
+	// 		FieldSchemaDir: "../ui",
+	// 	})
+	// }
 	// return
 
 	app := pocketbase.New()
 
 	computedfields.Register(app, computedfields.Config{})
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
-		Dir: "./migrations", // TODO verify if this is needed, I suspect it isn't
+		Automigrate: true,
 	})
 
 	changelog.Register(app, changelog.Config{

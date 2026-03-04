@@ -20,7 +20,6 @@ export const Collections = {
   ProductVariant: "productVariant",
   SupplierPrice: "supplierPrice",
   PricingRule: "pricingRule",
-  SquareConfig: "squareConfig",
 } as const;
 
 export interface CollectionRecords {
@@ -41,12 +40,14 @@ export interface CollectionRecords {
   productVariant: ProductVariantRecord;
   supplierPrice: SupplierPriceRecord;
   pricingRule: PricingRuleRecord;
-  squareConfig: SquareConfigRecord;
 }
 
 export interface TypedPocketBase extends PocketBase {
-  collection<K extends keyof CollectionRecords>(name: K): RecordService<CollectionRecords[K]>;
+  collection<K extends keyof CollectionRecords>(
+    name: K
+  ): RecordService<CollectionRecords[K]>;
 
   // fallback for dynamic strings
   collection(name: string): RecordService<any>;
 }
+

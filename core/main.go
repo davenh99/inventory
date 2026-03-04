@@ -5,8 +5,9 @@ import (
 )
 
 type Config struct {
-	ModulesDir    string
-	MigrationsDir string
+	ModulesDir     string
+	MigrationsDir  string
+	FieldSchemaDir string
 }
 
 func GenerateMigrations(cfg Config) error {
@@ -31,6 +32,11 @@ func GenerateMigrations(cfg Config) error {
 		if err != nil {
 			return fmt.Errorf("failed to generate migrations for module %s: %w", module.Name, err)
 		}
+	}
+
+	err = generateFieldSchema(sortedModules, cfg)
+	if err != nil {
+		return fmt.Errorf("failed to generate field schema: %w", err)
 	}
 
 	return nil

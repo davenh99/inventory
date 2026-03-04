@@ -6,7 +6,6 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 
-	_ "app/migrations"
 	"app/utils"
 )
 

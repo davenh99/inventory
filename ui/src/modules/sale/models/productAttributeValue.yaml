@@ -1,7 +1,0 @@
-name: productAttributeValue
-type: base
-id: pbc_prodattval
-
-fields:
-  - name: priceExtra
-    type: number

@@ -1,7 +1,0 @@
-name: productVariant
-type: base
-id: pbc_prodvar000
-
-fields:
-  - name: sellPrice
-    type: number

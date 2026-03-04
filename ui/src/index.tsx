@@ -1,11 +1,10 @@
-import { lazy, Show } from "solid-js";
+import { lazy, onMount, Show } from "solid-js";
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
 import { toaster } from "@kobalte/core/toast";
 
 import "./index.css";
 import { PBProvider, usePB } from "./config/pocketbase";
-import { ThemeProvider } from "./config/theme";
 import AppLayout from "./views/app/AppLayout";
 import LoadFullScreen from "./views/app/LoadFullScreen";
 import SiteLayout from "./views/app/SiteLayout";
@@ -46,13 +45,18 @@ console.error = (...args) => {
   ));
 };
 
+onMount(() => {
+  const theme = localStorage.getItem("theme");
+  if (theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+});
+
 render(
   () => (
     <PBProvider>
-      <ThemeProvider>
-        <Content />
-        <Toaster />
-      </ThemeProvider>
+      <Content />
+      <Toaster />
     </PBProvider>
   ),
   root!,

@@ -1,8 +1,0 @@
-name: productVariant
-type: base
-id: pbc_prodvar000
-
-# might avoid this, maybe just register a computed field in the hooks
-fields:
-  - name: computedPrice
-    type: number

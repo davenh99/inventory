@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 
 import { PBContext } from "./context";
 import { EXPAND_USER } from "../../../constants";
-import { Collections, TypedPocketBase } from "../../../pocketbase";
+import { Collections, TypedPocketBase } from "../../../pocketbase-types";
 
 const apiUrl =
   import.meta.env.VITE_PUBLIC_API_URL ||

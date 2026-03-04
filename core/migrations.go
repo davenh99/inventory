@@ -2,6 +2,7 @@ package pbmodules
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,7 +57,7 @@ func prepareMigrationsDir(cfg Config) error {
 }
 
 func generateModuleMigrations(module Module, cfg Config, counter *int) error {
-	fmt.Println("Generating migrations for module:", module.Name)
+	log.Println("Generating migrations for module:", module.Name)
 
 	for i, bytes := range module.PbCollections {
 		version := strings.ReplaceAll(module.Version, ".", "_")
