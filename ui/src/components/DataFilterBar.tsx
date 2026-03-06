@@ -1,12 +1,19 @@
 import { Accessor, createSignal, Setter } from "solid-js";
 import { Button, FilterBar, type FilterField, type Filter, type FilterGroup } from "@solidpb/ui-kit";
 import Plus from "lucide-solid/icons/plus";
+import { tv } from "tailwind-variants";
 
 interface DataFilterBarProps<T> {
   availableFields: FilterField<T>[];
   filters: Accessor<(Filter<T> | FilterGroup<T>)[]>;
   setFilters: Setter<(Filter<T> | FilterGroup<T>)[]>;
+  onCreateNew?: () => void;
+  class?: string;
 }
+
+const styles = tv({
+  base: "md:w-160",
+});
 
 export const DataFilterBar = <T,>(props: DataFilterBarProps<T>) => {
   const [searchValue, setSearchValue] = createSignal("");
@@ -92,11 +99,11 @@ export const DataFilterBar = <T,>(props: DataFilterBarProps<T>) => {
   return (
     <FilterBar<T>
       leftAction={
-        <Button appearance="success">
+        <Button appearance="success" onClick={props.onCreateNew}>
           <Plus size={16} /> New
         </Button>
       }
-      class="md:w-160"
+      class={styles({ class: props.class })}
       availableFields={props.availableFields}
       value={searchValue()}
       onChangeValue={setSearchValue}

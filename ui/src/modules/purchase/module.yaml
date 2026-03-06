@@ -1,8 +1,0 @@
-name: purchase
-version: 0.1.0
-description: Purchase module
-depends:
-  - base
-  - inventory
-models:
-  - supplierPrice
