@@ -20,6 +20,7 @@ export const Collections = {
   ProductVariant: "productVariant",
   SupplierPrice: "supplierPrice",
   PricingRule: "pricingRule",
+  SquareConfig: "squareConfig",
 } as const;
 
 export interface CollectionRecords {
@@ -40,6 +41,7 @@ export interface CollectionRecords {
   productVariant: ProductVariantRecord;
   supplierPrice: SupplierPriceRecord;
   pricingRule: PricingRuleRecord;
+  squareConfig: SquareConfigRecord;
 }
 
 export interface TypedPocketBase extends PocketBase {

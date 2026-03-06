@@ -14,26 +14,31 @@ type Config struct {
 }
 
 func Register(app *pocketbase.PocketBase, cfg Config) {
-	app.OnRecordAfterCreateSuccess().BindFunc(cfg.logCreate)
+	collectionNames := []string{}
+	for coll, _ := range cfg.Collections {
+		collectionNames = append(collectionNames, coll)
+	}
 
-	app.OnRecordUpdate().BindFunc(cfg.attachOldRecord)
-	app.OnRecordAfterUpdateSuccess().BindFunc(cfg.logUpdate)
+	app.OnRecordAfterCreateSuccess(collectionNames...).BindFunc(cfg.logCreate)
 
-	app.OnRecordDelete().BindFunc(cfg.attachOldRecord)
-	app.OnRecordAfterDeleteSuccess().BindFunc(cfg.logDelete)
+	app.OnRecordUpdate(collectionNames...).BindFunc(cfg.attachOldRecord)
+	app.OnRecordAfterUpdateSuccess(collectionNames...).BindFunc(cfg.logUpdate)
+
+	app.OnRecordDelete(collectionNames...).BindFunc(cfg.attachOldRecord)
+	app.OnRecordAfterDeleteSuccess(collectionNames...).BindFunc(cfg.logDelete)
 }
 
 type Diff struct {
-	changelogId string
-	field       string
-	valueNew    any
-	valueOld    any
+	changelog string
+	field     string
+	valueNew  any
+	valueOld  any
 }
 
 func (c *Config) attachOldRecord(e *core.RecordEvent) error {
-	if _, ok := c.Collections[e.Record.TableName()]; !ok {
-		return e.Next() // skip untracked collections
-	}
+	// if _, ok := c.Collections[e.Record.TableName()]; !ok {
+	// 	return e.Next() // skip untracked collections
+	// }
 
 	if oldRec, err := e.App.FindRecordById(e.Record.TableName(), e.Record.Id); err == nil {
 		e.Context = context.WithValue(e.Context, "oldRecord", oldRec)
@@ -149,7 +154,7 @@ func (c *Config) createChangelog(e *core.RecordEvent, collectionName string, rec
 		}
 
 		for _, diff := range diffs {
-			err := c.createChangeLogDiff(txApp, diff)
+			err := c.createChangeLogDiff(txApp, diff, record.Id)
 			if err != nil {
 				e.App.Logger().Error("changelogDiff save failed", "err", err)
 				return err
@@ -160,14 +165,14 @@ func (c *Config) createChangelog(e *core.RecordEvent, collectionName string, rec
 	})
 }
 
-func (c *Config) createChangeLogDiff(txApp core.App, diff Diff) error {
+func (c *Config) createChangeLogDiff(txApp core.App, diff Diff, changelodId string) error {
 	collection, err := txApp.FindCollectionByNameOrId("changelogDiff")
 	if err != nil {
 		return err
 	}
 
 	record := core.NewRecord(collection)
-	record.Set("changelogId", diff.changelogId)
+	record.Set("changelog", changelodId)
 	record.Set("field", diff.field)
 	record.Set("valueNew", diff.valueNew)
 	record.Set("valueOld", diff.valueOld)

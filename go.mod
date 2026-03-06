@@ -4,8 +4,7 @@ go 1.26.0
 
 require (
 	github.com/davenh99/pb-computedfields v0.2.0
-	github.com/davenh99/pb-typescript v0.2.0
-	github.com/goccy/go-yaml v1.19.2
+	github.com/davenh99/pb-typescript v0.3.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pocketbase/pocketbase v0.36.5
 )

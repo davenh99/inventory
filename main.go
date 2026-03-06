@@ -1,8 +1,6 @@
 package main
 
 import (
-	"app/ui/src/modules/base/hooks/changelog"
-	"app/ui/src/modules/base/hooks/role"
 	"app/utils"
 	"embed"
 	"io/fs"
@@ -18,6 +16,8 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
 
+	"app/ui/src/modules/base/hooks/changelog"
+	"app/ui/src/modules/base/hooks/role"
 	_ "app/ui/src/modules/base/migrations"
 	_ "app/ui/src/modules/inventory/migrations"
 	_ "app/ui/src/modules/pricing/migrations"
@@ -33,21 +33,11 @@ var embeddedFiles embed.FS
 
 func main() {
 	env := utils.Env
-
-	// if env.Env == "development" {
-	// 	pbmodules.GenerateMigrations(pbmodules.Config{
-	// 		ModulesDir:     "../ui/src/modules",
-	// 		MigrationsDir:  "../migrations",
-	// 		FieldSchemaDir: "../ui",
-	// 	})
-	// }
-	// return
-
 	app := pocketbase.New()
 
 	computedfields.Register(app, computedfields.Config{})
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
-		Automigrate: true,
+		Automigrate: env.Env == "development",
 	})
 
 	changelog.Register(app, changelog.Config{

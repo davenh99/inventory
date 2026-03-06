@@ -2,7 +2,7 @@ import { useContext } from "solid-js";
 import { PBContext } from "./context";
 
 import { EXPAND_USER } from "../../../constants";
-import { Collections } from "../../../pocketbase";
+import { Collections } from "../../../pocketbase-types";
 
 const BaseSignUpData = {
   dob: "",

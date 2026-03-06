@@ -27,7 +27,7 @@ type Config struct {
 }
 
 func Register(app *pocketbase.PocketBase, cfg Config) {
-	app.OnCollectionAfterCreateSuccess().BindFunc(cfg.writeDefaultRules)
+	app.OnCollectionCreateExecute().BindFunc(cfg.writeDefaultRules)
 }
 
 func (c *Config) writeDefaultRules(e *core.CollectionEvent) error {
@@ -61,11 +61,6 @@ func (c *Config) writeDefaultRules(e *core.CollectionEvent) error {
 		c.writeIfNil(&e.Collection.CreateRule, e.Collection.Name, "canCreate")
 		c.writeIfNil(&e.Collection.UpdateRule, e.Collection.Name, "canUpdate")
 		c.writeIfNil(&e.Collection.DeleteRule, e.Collection.Name, "canDelete")
-	}
-
-	err := c.App.Save(e.Collection)
-	if err != nil {
-		return err
 	}
 
 	return e.Next()

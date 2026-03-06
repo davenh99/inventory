@@ -191,3 +191,10 @@ interface PricingRule {
 type PricingRuleRecord = PricingRule & BaseRecord;
 type PricingRuleUpdatePayload = Partial<PricingRuleRecord>;
 
+/* Collection type: base */
+interface SquareConfig {
+  url: string; // text
+}
+type SquareConfigRecord = SquareConfig & BaseRecord;
+type SquareConfigUpdatePayload = Partial<SquareConfigRecord>;
+

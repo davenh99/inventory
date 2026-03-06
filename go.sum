@@ -6,8 +6,8 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davenh99/pb-computedfields v0.2.0 h1:DhOVnTzHJl2R1r2o3s+cjT7up5JXYxFW98cKp6uPXXk=
 github.com/davenh99/pb-computedfields v0.2.0/go.mod h1:wCC1Ze1ZG6qJf9EKas9NDE6+2WAJzB4qc8oHynZOxlI=
-github.com/davenh99/pb-typescript v0.2.0 h1:Bm/tKsLudJdv+V0kyRcvEvOIwtMuO8SNoenHKsgGizs=
-github.com/davenh99/pb-typescript v0.2.0/go.mod h1:rqpS6/7t/yuIgZH6hSup2cZus3lz6elgnzKkxhm07lE=
+github.com/davenh99/pb-typescript v0.3.0 h1:7lDR2N2kbWkr5H3zYYrOxaJ2n54ptq7reA+KEtz9w70=
+github.com/davenh99/pb-typescript v0.3.0/go.mod h1:aoxO7Qd6Zhy8E63cFt/ZFbKRoPM+buD2iI5zXktaWDk=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/domodwyer/mailyak/v3 v3.6.2 h1:x3tGMsyFhTCaxp6ycgR0FE/bu5QiNp+hetUuCOBXMn8=
@@ -26,8 +26,6 @@ github.com/go-ozzo/ozzo-validation/v4 v4.3.0 h1:byhDUpfEwjsVQb1vBunvIjh2BHQ9ead5
 github.com/go-ozzo/ozzo-validation/v4 v4.3.0/go.mod h1:2NKgrcHl3z6cJs+3Oo940FPRiTzuqKbvfrL2RxCj6Ew=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
-github.com/goccy/go-yaml v1.19.2 h1:PmFC1S6h8ljIz6gMRBopkjP1TVT7xuwrButHID66PoM=
-github.com/goccy/go-yaml v1.19.2/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
 github.com/golang-jwt/jwt/v5 v5.3.1 h1:kYf81DTWFe7t+1VvL7eS+jKFVWaUnK9cB1qbwn63YCY=
 github.com/golang-jwt/jwt/v5 v5.3.1/go.mod h1:fxCRLWMO43lRc8nhHWY6LGqRcf+1gQWArsqaEUEa5bE=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

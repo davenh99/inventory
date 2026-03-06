@@ -1,5 +1,5 @@
 import { createContext } from "solid-js";
-import { TypedPocketBase } from "../../../pocketbase";
+import { TypedPocketBase } from "../../../pocketbase-types";
 
 type PBContextType = {
   pb: TypedPocketBase;

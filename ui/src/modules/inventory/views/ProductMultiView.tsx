@@ -1,9 +1,10 @@
 import { Kanban, Table, type Filter, type FilterGroup } from "@solidpb/ui-kit";
 import { Component, createResource, createSignal, Show } from "solid-js";
 
-import { Collections } from "../../../../pocketbase";
+import { Collections } from "../../../../pocketbase-types";
 import { useAuthPB } from "../../../config/pocketbase";
 import DataFilterBar from "../../../components/DataFilterBar";
+import { getAvailableFields } from "../../../services/getAvailableFields";
 
 export const ProductMultiView: Component = () => {
   const [viewType, setViewType] = createSignal<"table" | "kanban">("kanban");
@@ -17,7 +18,11 @@ export const ProductMultiView: Component = () => {
 
   return (
     <div>
-      <DataFilterBar<ProductRecord> filters={filters} setFilters={setFilters} availableFields={[]} />
+      <DataFilterBar<ProductRecord>
+        filters={filters}
+        setFilters={setFilters}
+        availableFields={getAvailableFields<ProductRecord>("product")}
+      />
       <p>This is the Product Multi View page.</p>
       <Show
         when={viewType() === "table"}
