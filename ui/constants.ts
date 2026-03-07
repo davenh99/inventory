@@ -1,5 +1,6 @@
 export const THEME_KEY = "theme";
 export const EXPAND_USER = "role.permissions";
+export const NEW_RECORD_ID = "_new_record";
 
 export const DROP_ABOVE_CLASS = `
   relative 

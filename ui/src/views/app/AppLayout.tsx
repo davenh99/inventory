@@ -5,6 +5,7 @@ import DrawOpen from "lucide-solid/icons/panel-left-open";
 import DrawClose from "lucide-solid/icons/panel-left-close";
 import Settings from "lucide-solid/icons/settings";
 import LogOut from "lucide-solid/icons/log-out";
+import RulerDimensionLine from "lucide-solid/icons/ruler-dimension-line";
 import { Avatar, Container, Drawer, DropdownMenu, Navbar } from "@solidpb/ui-kit";
 
 import { useAuthPB } from "../../config/pocketbase";
@@ -56,7 +57,7 @@ export const AppLayout: ParentComponent = (props) => {
           <DrawClose size="24" class="is-drawer-close:hidden" />
         </Drawer.Trigger>
         <Drawer.Menu>
-          <Drawer.MenuItem icon={<Package />} label="Home" />
+          <Drawer.MenuItem icon={<RulerDimensionLine />} label="Units of Measure" href="/uom" />
         </Drawer.Menu>
       </Drawer.Drawer>
     </Drawer>

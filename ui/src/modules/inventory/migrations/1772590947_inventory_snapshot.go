@@ -294,7 +294,7 @@ func init() {
 						"maxSelect": 1,
 						"name": "type",
 						"presentable": false,
-						"required": false,
+						"required": true,
 						"system": false,
 						"type": "select",
 						"values": [

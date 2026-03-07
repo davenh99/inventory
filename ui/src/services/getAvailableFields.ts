@@ -23,10 +23,10 @@ export const getAvailableFields = <T>(collection: keyof CollectionRecords): Filt
     });
 };
 
-const getSelectOptions = (options: string[]): { label: string; value: string }[] => {
+export const getSelectOptions = (options: string[]): { label: string; value: string }[] => {
   return options.map((opt) => ({ value: opt, label: camelCaseToLabel(opt) }));
 };
 
-const camelCaseToLabel = (str: string): string => {
+export const camelCaseToLabel = (str: string): string => {
   return str.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase());
 };

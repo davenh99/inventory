@@ -1,4 +1,4 @@
-import { Button, Card, Kanban, Table, type Filter, type FilterGroup } from "@solidpb/ui-kit";
+import { Button, Card, type Filter, type FilterGroup, type BreadCrumb, BreadCrumbs } from "@solidpb/ui-kit";
 import { Component, createResource, createSignal, Show, Suspense } from "solid-js";
 import Rows4 from "lucide-solid/icons/rows-4";
 import Columns2 from "lucide-solid/icons/columns-2";
@@ -10,11 +10,18 @@ import { getAvailableFields } from "../../../services/getAvailableFields";
 import LoadFullScreen from "../../../views/app/LoadFullScreen";
 import ProductTable from "./ProductTable";
 import { ProductForm } from "./ProductForm";
+import ProductKanban from "./ProductKanban";
+import { useSearchParams } from "@solidjs/router";
+import { NEW_RECORD_ID } from "../../../../constants";
+
+type ProductMultiViewSearchParams = {
+  product: string; // product id
+};
 
 export const ProductMultiView: Component = () => {
+  const [searchParams, setSearchParams] = useSearchParams<ProductMultiViewSearchParams>();
   const [viewType, setViewType] = createSignal<"table" | "kanban">("kanban");
   const [filters, setFilters] = createSignal<(Filter<ProductRecord> | FilterGroup<ProductRecord>)[]>([]);
-  const [creatingNew, setCreatingNew] = createSignal(false);
   const { pb } = useAuthPB();
 
   const [products, { refetch }] = createResource(async () => {
@@ -22,23 +29,11 @@ export const ProductMultiView: Component = () => {
     return res;
   });
 
-  const saveProduct = async (data: Partial<ProductRecord>) => {
-    try {
-      if (data.id) {
-        await pb.collection(Collections.Product).update(data.id!, data);
-      } else {
-        await pb.collection(Collections.Product).create(data);
-      }
-      refetch();
-    } catch (e) {
-      console.error("Error saving product: ", e);
-    } finally {
-      setCreatingNew(false);
-    }
-  };
-
   return (
-    <Show when={!creatingNew()} fallback={<ProductForm product={{} as ProductRecord} onSave={saveProduct} />}>
+    <Show
+      when={searchParams.product === undefined}
+      fallback={<ProductForm onSave={refetch} productId={searchParams.product} />}
+    >
       <div>
         <div class="flex gap-3">
           <div class="flex-1 flex justify-center">
@@ -46,35 +41,47 @@ export const ProductMultiView: Component = () => {
               filters={filters}
               setFilters={setFilters}
               availableFields={getAvailableFields<ProductRecord>("product")}
-              onCreateNew={() => setCreatingNew(true)}
+              onCreateNew={() => {
+                setSearchParams({ product: NEW_RECORD_ID });
+              }}
             />
           </div>
           <div class="join">
             <Button
               class="join-item"
               modifier="square"
-              appearance={viewType() === "table" ? "primary" : undefined}
+              appearance={viewType() === "table" ? "neutral" : undefined}
               onClick={() => setViewType("table")}
             >
-              <Rows4 class="h-[1.5em] w-[1.5em]" />
+              <Rows4 class="h-[1.2em] w-[1.2em]" />
             </Button>
             <Button
               class="join-item"
               modifier="square"
-              appearance={viewType() === "kanban" ? "primary" : undefined}
+              appearance={viewType() === "kanban" ? "neutral" : undefined}
               onClick={() => setViewType("kanban")}
             >
-              <Columns2 class="h-[1.5em] w-[1.5em]" />
+              <Columns2 class="h-[1.2em] w-[1.2em]" />
             </Button>
           </div>
         </div>
         <Suspense fallback={<LoadFullScreen />}>
           <Show
             when={viewType() === "table"}
-            fallback={<Kanban<ProductRecord, null> columns={[]} items={products() ?? []} />}
+            fallback={
+              <ProductKanban
+                products={products() ?? []}
+                onItemClick={() => {}}
+                onCreateNew={() => setSearchParams({ product: NEW_RECORD_ID })}
+              />
+            }
           >
             <Card class="mt-2">
-              <ProductTable onRowClick={() => {}} products={products() ?? []} />
+              <ProductTable
+                onRowClick={() => {}}
+                products={products() ?? []}
+                onCreateNew={() => setSearchParams({ product: NEW_RECORD_ID })}
+              />
             </Card>
           </Show>
         </Suspense>

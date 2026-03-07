@@ -11,9 +11,11 @@ import SiteLayout from "./views/app/SiteLayout";
 import Unauthorised from "./routes/Unauthorised";
 import { IGNORE_ERRORS } from "../constants";
 import { Toast, Toaster } from "@solidpb/ui-kit";
+import { CrumbsProvider } from "./config/Crumbs/Provider";
 
 const NotFound = lazy(() => import("./routes/NotFound"));
 const Auth = lazy(() => import("./routes/Auth"));
+const Uom = lazy(() => import("./routes/Uom"));
 const Dashboard = lazy(() => import("./routes/Dashboard"));
 const Settings = lazy(() => import("./routes/Settings"));
 
@@ -70,7 +72,9 @@ function Content() {
       <Show when={!store.networkError} fallback={<p>Network Error, could not connect to server.</p>}>
         <Router>
           <Show when={!!store.user} fallback={<Site />}>
-            <App />
+            <CrumbsProvider>
+              <App />
+            </CrumbsProvider>
           </Show>
           <Route path="/*paramName" component={NotFound} />
         </Router>
@@ -84,6 +88,7 @@ function App() {
     <Route path="/" component={AppLayout}>
       <Route path="/" component={Dashboard} />
       <Route path="/settings" component={Settings} />
+      <Route path="/uom" component={Uom} />
       <Route path="/unauthorized" component={Unauthorised} />
     </Route>
   );
