@@ -1,4 +1,4 @@
-import { Component, createResource, createSignal, onCleanup, Suspense } from "solid-js";
+import { Component, createResource, createSignal, onCleanup, Show } from "solid-js";
 
 import { Card, createForm, type BreadCrumb } from "@solidpb/ui-kit";
 import { camelCaseToLabel, getSelectOptions } from "../../../services/getAvailableFields";
@@ -60,7 +60,7 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
 
   return (
     <Card>
-      <Suspense fallback={<LoadFullScreen />}>
+      <Show when={product()} fallback={<LoadFullScreen />}>
         <Form data={product() ?? {}} onSave={handleSave}>
           <div class="sm:w-130 space-y-3">
             <Form.TextField field="name" label="Product Name" size="xl" />
@@ -83,7 +83,7 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
             />
           </div>
         </Form>
-      </Suspense>
+      </Show>
     </Card>
   );
 };

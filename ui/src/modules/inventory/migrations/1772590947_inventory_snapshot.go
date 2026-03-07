@@ -680,6 +680,179 @@ func init() {
 				"type": "base",
 				"updateRule": null,
 				"viewRule": null 
+			},
+			{
+				"id": "pbc_1783805600",
+				"listRule": null,
+				"viewRule": null,
+				"createRule": null,
+				"updateRule": null,
+				"deleteRule": null,
+				"name": "bom",
+				"type": "base",
+				"fields": [
+					{
+						"autogeneratePattern": "[a-z0-9]{15}",
+						"hidden": false,
+						"id": "text3208210256",
+						"max": 15,
+						"min": 15,
+						"name": "id",
+						"pattern": "^[a-z0-9]+$",
+						"presentable": false,
+						"primaryKey": true,
+						"required": true,
+						"system": true,
+						"type": "text"
+					},
+					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_prod000000",
+						"hidden": false,
+						"id": "relation3544843437",
+						"maxSelect": 1,
+						"minSelect": 0,
+						"name": "product",
+						"presentable": false,
+						"required": true,
+						"system": false,
+						"type": "relation"
+					},
+					{
+						"hidden": false,
+						"id": "autodate2990389176",
+						"name": "created",
+						"onCreate": true,
+						"onUpdate": false,
+						"presentable": false,
+						"system": false,
+						"type": "autodate"
+					},
+					{
+						"hidden": false,
+						"id": "autodate3332085495",
+						"name": "updated",
+						"onCreate": true,
+						"onUpdate": true,
+						"presentable": false,
+						"system": false,
+						"type": "autodate"
+					}
+				],
+				"indexes": [],
+				"system": false
+			},
+			{
+				"id": "pbc_3631495167",
+				"listRule": null,
+				"viewRule": null,
+				"createRule": null,
+				"updateRule": null,
+				"deleteRule": null,
+				"name": "bomLine",
+				"type": "base",
+				"fields": [
+					{
+						"autogeneratePattern": "[a-z0-9]{15}",
+						"hidden": false,
+						"id": "text3208210256",
+						"max": 15,
+						"min": 15,
+						"name": "id",
+						"pattern": "^[a-z0-9]+$",
+						"presentable": false,
+						"primaryKey": true,
+						"required": true,
+						"system": true,
+						"type": "text"
+					},
+					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_prodvar000",
+						"hidden": false,
+						"id": "relation2779848726",
+						"maxSelect": 1,
+						"minSelect": 0,
+						"name": "productVariant",
+						"presentable": false,
+						"required": true,
+						"system": false,
+						"type": "relation"
+					},
+					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_prodattval",
+						"hidden": false,
+						"id": "relation1407081415",
+						"maxSelect": 999,
+						"minSelect": 0,
+						"name": "productAttributeValues",
+						"presentable": false,
+						"required": false,
+						"system": false,
+						"type": "relation"
+					},
+					{
+						"hidden": false,
+						"id": "number3371740703",
+						"max": null,
+						"min": null,
+						"name": "qty",
+						"onlyInt": false,
+						"presentable": false,
+						"required": false,
+						"system": false,
+						"type": "number"
+					},
+					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_uom0000000",
+						"hidden": false,
+						"id": "relation2082281764",
+						"maxSelect": 1,
+						"minSelect": 0,
+						"name": "uom",
+						"presentable": false,
+						"required": true,
+						"system": false,
+						"type": "relation"
+					},
+					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_1783805600",
+						"hidden": false,
+						"id": "relation1702145233",
+						"maxSelect": 1,
+						"minSelect": 0,
+						"name": "bom",
+						"presentable": false,
+						"required": true,
+						"system": false,
+						"type": "relation"
+					},
+					{
+						"hidden": false,
+						"id": "autodate2990389176",
+						"name": "created",
+						"onCreate": true,
+						"onUpdate": false,
+						"presentable": false,
+						"system": false,
+						"type": "autodate"
+					},
+					{
+						"hidden": false,
+						"id": "autodate3332085495",
+						"name": "updated",
+						"onCreate": true,
+						"onUpdate": true,
+						"presentable": false,
+						"system": false,
+						"type": "autodate"
+					}
+				],
+				"indexes": [],
+				"system": false
 			}
 		]`
 

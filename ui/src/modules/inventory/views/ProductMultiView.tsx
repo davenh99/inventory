@@ -25,7 +25,7 @@ export const ProductMultiView: Component = () => {
   const { pb } = useAuthPB();
 
   const [products, { refetch }] = createResource(async () => {
-    const res = await pb.collection(Collections.Product).getFullList();
+    const res = await pb.collection(Collections.Product).getFullList({ sort: "name" });
     return res;
   });
 
@@ -71,14 +71,14 @@ export const ProductMultiView: Component = () => {
             fallback={
               <ProductKanban
                 products={products() ?? []}
-                onItemClick={() => {}}
+                onItemClick={(item) => setSearchParams({ product: item.id })}
                 onCreateNew={() => setSearchParams({ product: NEW_RECORD_ID })}
               />
             }
           >
             <Card class="mt-2">
               <ProductTable
-                onRowClick={() => {}}
+                onRowClick={(item) => setSearchParams({ product: item.id })}
                 products={products() ?? []}
                 onCreateNew={() => setSearchParams({ product: NEW_RECORD_ID })}
               />

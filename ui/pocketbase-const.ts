@@ -198,4 +198,21 @@ export const fieldSchema: FieldSchema = {
     created: { type: "autodate" },
     updated: { type: "autodate" },
   },
+  bom: {
+    id: { type: "text" },
+    product: { type: "relation" },
+    created: { type: "autodate" },
+    updated: { type: "autodate" },
+  },
+  bomLine: {
+    id: { type: "text" },
+    productVariant: { type: "relation" },
+    productAttributeValues: { type: "relation" },
+    qty: { type: "number" },
+    uom: { type: "relation" },
+    bom: { type: "relation" },
+    created: { type: "autodate" },
+    updated: { type: "autodate" },
+  },
 };
+

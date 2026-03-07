@@ -2,10 +2,10 @@ import { Component, createResource, Show, Suspense } from "solid-js";
 import { Checkbox, Table } from "@solidpb/ui-kit";
 import { ColumnDef } from "@tanstack/solid-table";
 
-import { useAuthPB } from "../../config/pocketbase";
-import { Collections } from "../../../pocketbase-types";
-import LoadFullScreen from "../../views/app/LoadFullScreen";
-import { camelCaseToLabel } from "../../services/getAvailableFields";
+import { useAuthPB } from "../../../config/pocketbase";
+import { Collections } from "../../../../pocketbase-types";
+import LoadFullScreen from "../../../views/app/LoadFullScreen";
+import { camelCaseToLabel } from "../../../services/getAvailableFields";
 
 export const UomTable: Component = () => {
   const columns: ColumnDef<UomRecord>[] = [
@@ -38,14 +38,14 @@ export const UomTable: Component = () => {
   const { pb } = useAuthPB();
 
   const [data] = createResource(async () => {
-    const res = await pb.collection(Collections.Uom).getFullList();
+    const res = await pb.collection(Collections.Uom).getFullList({ sort: "category, -referenceUom, name" });
     return res;
   });
 
   return (
     <Suspense fallback={<LoadFullScreen />}>
       <Show when={data()?.length} fallback={<div>No Units of Measure found</div>}>
-        <Table<UomRecord> data={data() ?? []} columns={() => columns} onRowClick={() => {}} headers />
+        <Table<UomRecord> data={data() ?? []} columns={columns} headers />
       </Show>
     </Suspense>
   );
