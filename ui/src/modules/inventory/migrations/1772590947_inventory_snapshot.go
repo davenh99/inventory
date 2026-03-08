@@ -365,7 +365,13 @@ func init() {
 						"id": "file3309110367",
 						"maxSelect": 0,
 						"maxSize": 0,
-						"mimeTypes": null,
+						"mimeTypes": [
+							"image/jpeg",
+							"image/png",
+							"image/svg+xml",
+							"image/gif",
+							"image/webp"
+						],
 						"name": "image",
 						"presentable": false,
 						"protected": false,

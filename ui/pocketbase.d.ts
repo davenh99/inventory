@@ -118,7 +118,7 @@ type AttributeValueUpdatePayload = Partial<AttributeValueRecord>;
 interface Product {
   name: string; // text
   active: boolean; // bool
-  type: "stockable" | "consumable" | ""; // select
+  type: "stockable" | "consumable"; // select
   canPurchase: boolean; // bool
   canSell: boolean; // bool
   uom: string; // relation
@@ -168,6 +168,24 @@ type ProductVariantRecord = ProductVariant & BaseRecord;
 type ProductVariantUpdatePayload = Partial<ProductVariantRecord>;
 
 /* Collection type: base */
+interface Bom {
+  product: string; // relation
+}
+type BomRecord = Bom & BaseRecord;
+type BomUpdatePayload = Partial<BomRecord>;
+
+/* Collection type: base */
+interface BomLine {
+  productVariant: string; // relation
+  productAttributeValues: string[]; // relation
+  qty: number; // number
+  uom: string; // relation
+  bom: string; // relation
+}
+type BomLineRecord = BomLine & BaseRecord;
+type BomLineUpdatePayload = Partial<BomLineRecord>;
+
+/* Collection type: base */
 interface SupplierPrice {
   productVariant: string; // relation
   partner: string; // relation
@@ -197,22 +215,4 @@ interface SquareConfig {
 }
 type SquareConfigRecord = SquareConfig & BaseRecord;
 type SquareConfigUpdatePayload = Partial<SquareConfigRecord>;
-
-/* Collection type: base */
-interface Bom {
-  product: string; // relation
-}
-type BomRecord = Bom & BaseRecord;
-type BomUpdatePayload = Partial<BomRecord>;
-
-/* Collection type: base */
-interface BomLine {
-  productVariant: string; // relation
-  productAttributeValues: string[]; // relation
-  qty: number; // number
-  uom: string; // relation
-  bom: string; // relation
-}
-type BomLineRecord = BomLine & BaseRecord;
-type BomLineUpdatePayload = Partial<BomLineRecord>;
 

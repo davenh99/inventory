@@ -16,6 +16,7 @@ type Config struct {
 	GithubRepo        string
 	ArchiveExecutable string
 	GithubToken       string
+	SquareAccessToken string
 }
 
 var Env Config = initConfig()
@@ -33,6 +34,7 @@ func initConfig() Config {
 		GithubRepo:        getEnv("GH_REPO", ""),
 		ArchiveExecutable: getEnv("ARCHIVE_EXECUTABLE", ""),
 		GithubToken:       getEnv("GH_TOKEN", ""),
+		SquareAccessToken: getEnv("SQUARE_ACCESS_TOKEN", ""),
 	}
 }
 

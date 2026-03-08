@@ -1,9 +1,9 @@
 import { type BreadCrumb } from "@solidpb/ui-kit";
 import { createContext } from "solid-js";
 
-type CrumbsContextType = {
+type AppContextType = {
   crumbs: () => BreadCrumb[];
   setCrumbs: (crumbs: BreadCrumb[]) => void;
 };
 
-export const CrumbsContext = createContext<CrumbsContextType>();
+export const AppContext = createContext<AppContextType>();

@@ -11,7 +11,6 @@ import SiteLayout from "./views/app/SiteLayout";
 import Unauthorised from "./routes/Unauthorised";
 import { IGNORE_ERRORS } from "../constants";
 import { Toast, Toaster } from "@solidpb/ui-kit";
-import { CrumbsProvider } from "./config/Crumbs/Provider";
 
 const NotFound = lazy(() => import("./routes/NotFound"));
 const Auth = lazy(() => import("./routes/Auth"));
@@ -72,9 +71,7 @@ function Content() {
       <Show when={!store.networkError} fallback={<p>Network Error, could not connect to server.</p>}>
         <Router>
           <Show when={!!store.user} fallback={<Site />}>
-            <CrumbsProvider>
-              <App />
-            </CrumbsProvider>
+            <App />
           </Show>
           <Route path="/*paramName" component={NotFound} />
         </Router>

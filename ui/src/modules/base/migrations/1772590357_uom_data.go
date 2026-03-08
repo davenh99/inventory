@@ -23,8 +23,10 @@ func init() {
 		}
 
 		data := []UOM{
-			{Name: "Unit", Category: "unit", Ratio: 1, ReferenceUom: true, Active: true},
-			{Name: "Box of 10", Category: "unit", Ratio: 10, Active: true},
+			{Name: "Unit(s)", Category: "units", Ratio: 1, ReferenceUom: true, Active: true},
+			{Name: "Item(s)", Category: "units", Ratio: 1, Active: true},
+			{Name: "Box of 10", Category: "units", Ratio: 10, Active: true},
+			{Name: "Dozen", Category: "units", Ratio: 12, Active: true},
 			{Name: "L", Category: "volume", Ratio: 1, ReferenceUom: true, Active: true},
 			{Name: "mL", Category: "volume", Ratio: 0.001, Active: true},
 			{Name: "kg", Category: "weight", Ratio: 1, ReferenceUom: true, Active: true},

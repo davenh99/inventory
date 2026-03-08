@@ -18,11 +18,11 @@ export const Collections = {
   ProductAttribute: "productAttribute",
   ProductAttributeValue: "productAttributeValue",
   ProductVariant: "productVariant",
+  Bom: "bom",
+  BomLine: "bomLine",
   SupplierPrice: "supplierPrice",
   PricingRule: "pricingRule",
   SquareConfig: "squareConfig",
-  Bom: "bom",
-  BomLine: "bomLine",
 } as const;
 
 export interface CollectionRecords {
@@ -41,11 +41,11 @@ export interface CollectionRecords {
   productAttribute: ProductAttributeRecord;
   productAttributeValue: ProductAttributeValueRecord;
   productVariant: ProductVariantRecord;
+  bom: BomRecord;
+  bomLine: BomLineRecord;
   supplierPrice: SupplierPriceRecord;
   pricingRule: PricingRuleRecord;
   squareConfig: SquareConfigRecord;
-  bom: BomRecord;
-  bomLine: BomLineRecord;
 }
 
 export interface TypedPocketBase extends PocketBase {

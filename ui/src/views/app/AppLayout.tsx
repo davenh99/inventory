@@ -1,17 +1,61 @@
-import { ParentComponent } from "solid-js";
-import { A } from "@solidjs/router";
+import { createEffect, createSignal, ParentComponent, useContext } from "solid-js";
+import { useLocation } from "@solidjs/router";
 import Package from "lucide-solid/icons/package";
 import DrawOpen from "lucide-solid/icons/panel-left-open";
 import DrawClose from "lucide-solid/icons/panel-left-close";
 import Settings from "lucide-solid/icons/settings";
 import LogOut from "lucide-solid/icons/log-out";
 import RulerDimensionLine from "lucide-solid/icons/ruler-dimension-line";
-import { Avatar, Container, Drawer, DropdownMenu, Navbar } from "@solidpb/ui-kit";
+import { Avatar, BreadCrumb, BreadCrumbs, Container, Drawer, DropdownMenu, Navbar } from "@solidpb/ui-kit";
 
 import { useAuthPB } from "../../config/pocketbase";
+import { AppContext } from "./appContext";
+
+type RouteConfig = {
+  [key: string]: BreadCrumb;
+};
+
+const routeConfig: RouteConfig = {
+  "/": { label: "Dashboard", href: "/" },
+  "/settings": { label: "Settings", href: "/settings" },
+  "/uom": { label: "Units of Measure", href: "/uom" },
+};
 
 export const AppLayout: ParentComponent = (props) => {
   const { user, logout } = useAuthPB();
+  const location = useLocation();
+  const [baseCrumbs, setBaseCrumbs] = createSignal<BreadCrumb[]>([]);
+  const [dynamicCrumbs, setDynamicCrumbs] = createSignal<BreadCrumb[]>([]);
+
+  // Update base crumbs when location changes
+  createEffect(() => {
+    const pathname = location.pathname;
+    const routeCrumb = routeConfig[pathname];
+
+    if (routeCrumb) {
+      setBaseCrumbs([routeCrumb]);
+    } else {
+      // Default fallback
+      setBaseCrumbs([{ label: "Home", href: "/" }]);
+    }
+
+    // Reset dynamic crumbs when route changes
+    setDynamicCrumbs([]);
+  });
+
+  const handleSetCrumbs = (newCrumbs: BreadCrumb[]) => {
+    setDynamicCrumbs(newCrumbs);
+  };
+
+  const crumbs = () => {
+    const crumbs = [...baseCrumbs(), ...dynamicCrumbs()];
+    // remove href and onclick from the last crumb
+    if (crumbs.length > 0) {
+      const lastIndex = crumbs.length - 1;
+      crumbs[lastIndex] = { label: crumbs[lastIndex].label };
+    }
+    return crumbs;
+  };
 
   return (
     <Drawer id="app-drawer">
@@ -21,10 +65,8 @@ export const AppLayout: ParentComponent = (props) => {
             <Drawer.Trigger class="btn btn-ghost btn-square btn-sm lg:hidden mx-1">
               <DrawOpen size="24" />
             </Drawer.Trigger>
-            <Navbar.Brand>
-              <A href="/" class="flex flex-row gap-1">
-                <Package size={24} /> Inventory
-              </A>
+            <Navbar.Brand href="/">
+              <Package size={24} /> Inventory
             </Navbar.Brand>
           </div>
           <Navbar.Profile>
@@ -48,7 +90,10 @@ export const AppLayout: ParentComponent = (props) => {
           </Navbar.Profile>
         </Navbar>
         <Container>
-          <div>{props.children}</div>
+          <AppContext.Provider value={{ crumbs, setCrumbs: handleSetCrumbs }}>
+            <BreadCrumbs items={crumbs()} class="font-bold text-md" />
+            <div>{props.children}</div>
+          </AppContext.Provider>
         </Container>
       </Drawer.Content>
       <Drawer.Drawer>
@@ -63,5 +108,13 @@ export const AppLayout: ParentComponent = (props) => {
     </Drawer>
   );
 };
+
+export function useCrumbs() {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useCrumbs must be used within AppContext.Provider (AppLayout)");
+  }
+  return context;
+}
 
 export default AppLayout;
