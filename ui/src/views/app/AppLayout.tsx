@@ -5,6 +5,7 @@ import DrawOpen from "lucide-solid/icons/panel-left-open";
 import DrawClose from "lucide-solid/icons/panel-left-close";
 import Settings from "lucide-solid/icons/settings";
 import LogOut from "lucide-solid/icons/log-out";
+import SquareSquare from "lucide-solid/icons/square-square";
 import RulerDimensionLine from "lucide-solid/icons/ruler-dimension-line";
 import { Avatar, BreadCrumb, BreadCrumbs, Container, Drawer, DropdownMenu, Navbar } from "@solidpb/ui-kit";
 
@@ -16,9 +17,10 @@ type RouteConfig = {
 };
 
 const routeConfig: RouteConfig = {
-  "/": { label: "Dashboard", href: "/" },
+  "/": { label: "Products", href: "/" },
   "/settings": { label: "Settings", href: "/settings" },
   "/uom": { label: "Units of Measure", href: "/uom" },
+  "/square": { label: "Square Integration", href: "/square" },
 };
 
 export const AppLayout: ParentComponent = (props) => {
@@ -102,7 +104,9 @@ export const AppLayout: ParentComponent = (props) => {
           <DrawClose size="24" class="is-drawer-close:hidden" />
         </Drawer.Trigger>
         <Drawer.Menu>
+          <Drawer.MenuItem icon={<Package />} label="Products" href="/" />
           <Drawer.MenuItem icon={<RulerDimensionLine />} label="Units of Measure" href="/uom" />
+          <Drawer.MenuItem icon={<SquareSquare />} label="Square Integration" href="/square" />
         </Drawer.Menu>
       </Drawer.Drawer>
     </Drawer>

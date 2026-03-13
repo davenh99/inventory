@@ -17,6 +17,7 @@ const Auth = lazy(() => import("./routes/Auth"));
 const Uom = lazy(() => import("./routes/Uom"));
 const Dashboard = lazy(() => import("./routes/Dashboard"));
 const Settings = lazy(() => import("./routes/Settings"));
+const Square = lazy(() => import("./routes/Square"));
 
 const root = document.getElementById("root");
 
@@ -87,6 +88,7 @@ function App() {
       <Route path="/settings" component={Settings} />
       <Route path="/uom" component={Uom} />
       <Route path="/unauthorized" component={Unauthorised} />
+      <Route path="/square" component={Square} />
     </Route>
   );
 }

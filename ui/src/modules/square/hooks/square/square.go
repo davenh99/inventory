@@ -17,14 +17,29 @@ func Register(app core.App, cfg Config) {
 }
 
 func (c *Config) ImportSquareItems(se *core.ServeEvent) error {
-	// serves static files from the provided public dir (if exists)
-	se.Router.POST("/square/import", func(e *core.RequestEvent) error {
+	se.Router.POST("/square/items/import", func(e *core.RequestEvent) error {
 		client := client.NewClient(
 			option.WithToken(
-				cfg.SquareAccessToken,
+				c.SquareAccessToken,
 			), option.WithBaseURL(square.Environments.Sandbox),
 		)
-		return nil
+
+		// locs, err := client.Locations.List(ctx)
+
+		// if err != nil {
+		// 	return err
+		// }
+
+		// for _, l := range locs.Locations {
+		// 	println(l.ID, l.Name)
+		// }
+
+		// response, err := client.Catalog.List()
+		// if err != nil {
+		// 	return err
+		// }
+
+		return e.Next()
 	})
 
 	return se.Next()

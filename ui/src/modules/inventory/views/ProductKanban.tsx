@@ -1,6 +1,7 @@
 import { Component, Show } from "solid-js";
 import NoProducts from "./NoProducts";
 import { Image, Kanban } from "@solidpb/ui-kit";
+import { useAuthPB } from "../../../config/pocketbase";
 
 interface ProductKanbanProps {
   products: ProductRecord[];
@@ -9,6 +10,8 @@ interface ProductKanbanProps {
 }
 
 export const ProductKanban: Component<ProductKanbanProps> = (props) => {
+  const { pb } = useAuthPB();
+
   return (
     <Show when={props.products.length} fallback={<NoProducts onCreateNew={props.onCreateNew} />}>
       <Kanban<ProductRecord, {}>
@@ -19,7 +22,7 @@ export const ProductKanban: Component<ProductKanbanProps> = (props) => {
         cardClass="border border-base-200"
         renderItem={(item) => (
           <div class="flex gap-2">
-            <Image src={item.image} size="sm" class="rounded-sm" />
+            <Image src={pb.files.getURL(item, item.image)} size="sm" class="rounded-sm" />
             <div>
               <p class="font-bold">{item.name}</p>
             </div>

@@ -19,12 +19,12 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
   const { pb } = useAuthPB();
   const { setCrumbs } = useCrumbs();
 
-  // const [edited, setEdited] = createSignal(false);
-  const [product, { refetch }] = createResource(async () => {
+  const [product, { refetch, mutate }] = createResource(async () => {
     if (props.productId && props.productId !== NEW_RECORD_ID) {
-      const record = await pb.collection(Collections.Product).getOne(props.productId);
+      const record = await pb
+        .collection(Collections.Product)
+        .getOne(props.productId, { expand: "category, uom, tags" });
       setCrumbs?.([{ label: record.name }]);
-      console.log("Setting product type: ", record.type);
       setProductType({ value: record.type, label: camelCaseToLabel(record.type) });
       return record;
     } else {
@@ -36,8 +36,27 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
     value: product()?.type ?? "consumable",
     label: camelCaseToLabel(product()?.type ?? "consumable"),
   });
+  const pbImageUrl = () => {
+    if (product()?.image) {
+      return pb.files.getURL(product()!, product()!.image!);
+    }
+    return undefined;
+  };
+  const [categories] = createResource(async () => {
+    const data = await pb.collection(Collections.ProductCategory).getFullList();
+    return data;
+  });
+  const [tagOptions] = createResource(async () => {
+    const data = await pb.collection(Collections.Tag).getFullList();
+    return data;
+  });
+  const [uomOptions] = createResource(async () => {
+    const data = await pb.collection(Collections.Uom).getFullList();
+    return data;
+  });
 
   const handleSave = async (data: Partial<ProductRecord>) => {
+    console.log(data);
     try {
       let prod: ProductRecord;
       if (data.id) {
@@ -65,12 +84,12 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
   // onCleanup(() => {});
 
   return (
-    <Card>
-      <Show when={product()} fallback={<LoadFullScreen />}>
+    <Show when={product()} fallback={<LoadFullScreen />}>
+      <Card>
         <Form data={product() ?? {}} onSave={handleSave}>
           <div class="sm:w-130 space-y-3">
             <Form.TextField field="name" label="Product Name" size="xl" />
-            <Form.ImageField field="image" label="Product Image" size="md" />
+            <Form.ImageField field="image" label="Product Image" size="md" src={pbImageUrl()} />
             <Show when={product()?.canSell}>
               <Form.NumberField
                 field="sellPrice"
@@ -90,9 +109,55 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
               options={getSelectOptions(["stockable", "consumable"])}
               disabled
             />
+            <Form.RelationField
+              field="uom"
+              label="Unit of Measure"
+              options={uomOptions() ?? []}
+              valueKey="id"
+              labelKey="name"
+              value={product()?.expand?.uom}
+              onChange={(value) => {
+                mutate((prev) => {
+                  if (!prev) return prev;
+                  return { ...prev, expand: { ...prev.expand, uom: value } };
+                });
+              }}
+              placeholder="Unit of Measure"
+            />
+            <Form.RelationField
+              field="category"
+              label="Category"
+              placeholder="Category"
+              options={categories() ?? []}
+              valueKey="id"
+              labelKey="name"
+              value={product()?.expand?.category}
+              onChange={(value) => {
+                mutate((prev) => {
+                  if (!prev) return prev;
+                  return { ...prev, expand: { ...prev.expand, category: value } };
+                });
+              }}
+            />
+            <Form.RelationField
+              field="tags"
+              label="Tags"
+              placeholder="Tags"
+              options={tagOptions() ?? []}
+              valueKey="id"
+              labelKey="name"
+              value={product()?.expand?.tags ?? []}
+              onChange={(tags) => {
+                mutate((prev) => {
+                  if (!prev) return prev;
+                  return { ...prev, expand: { ...prev.expand, tags } };
+                });
+              }}
+              multi
+            />
           </div>
         </Form>
-      </Show>
-    </Card>
+      </Card>
+    </Show>
   );
 };
