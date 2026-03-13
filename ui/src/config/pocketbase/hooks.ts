@@ -69,5 +69,9 @@ export function useAuthPB() {
     throw new Error("User not authenticated");
   }
 
-  return { pb, user, logout };
+  const createTag = async (name: string) => {
+    return pb.collection(Collections.Tag).create({ name });
+  };
+
+  return { pb, user, logout, createTag };
 }

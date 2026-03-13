@@ -1,92 +1,78 @@
-import { Button, Card, type Filter, type FilterGroup, type BreadCrumb, BreadCrumbs } from "@solidpb/ui-kit";
-import { Component, createResource, createSignal, Show, Suspense } from "solid-js";
+import { Component, createSignal, Resource, Show, Suspense } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { Button, Card, type Filter, type FilterGroup } from "@solidpb/ui-kit";
 import Rows4 from "lucide-solid/icons/rows-4";
 import Columns2 from "lucide-solid/icons/columns-2";
 
-import { Collections } from "../../../../pocketbase-types";
-import { useAuthPB } from "../../../config/pocketbase";
 import DataFilterBar from "../../../components/DataFilterBar";
 import { getAvailableFields } from "../../../services/getAvailableFields";
 import LoadFullScreen from "../../../views/app/LoadFullScreen";
 import ProductTable from "./ProductTable";
-import { ProductForm } from "./ProductForm";
 import ProductKanban from "./ProductKanban";
-import { useSearchParams } from "@solidjs/router";
 import { NEW_RECORD_ID } from "../../../../constants";
 
-type ProductMultiViewSearchParams = {
-  product: string; // product id
-};
+interface ProductMultiViewProps {
+  products: Resource<ProductRecord[]>;
+}
 
-export const ProductMultiView: Component = () => {
-  const [searchParams, setSearchParams] = useSearchParams<ProductMultiViewSearchParams>();
+export const ProductMultiView: Component<ProductMultiViewProps> = (props) => {
+  const navigate = useNavigate();
   const [viewType, setViewType] = createSignal<"table" | "kanban">("kanban");
   const [filters, setFilters] = createSignal<(Filter<ProductRecord> | FilterGroup<ProductRecord>)[]>([]);
-  const { pb } = useAuthPB();
-
-  const [products, { refetch }] = createResource(async () => {
-    const res = await pb.collection(Collections.Product).getFullList({ sort: "name" });
-    return res;
-  });
 
   return (
-    <Show
-      when={searchParams.product === undefined}
-      fallback={<ProductForm onSave={refetch} productId={searchParams.product} />}
-    >
-      <div>
-        <div class="flex gap-3">
-          <div class="flex-1 flex justify-center">
-            <DataFilterBar<ProductRecord>
-              filters={filters}
-              setFilters={setFilters}
-              availableFields={getAvailableFields<ProductRecord>("product")}
-              onCreateNew={() => {
-                setSearchParams({ product: NEW_RECORD_ID });
-              }}
-            />
-          </div>
-          <div class="join">
-            <Button
-              class="join-item"
-              modifier="square"
-              appearance={viewType() === "table" ? "neutral" : undefined}
-              onClick={() => setViewType("table")}
-            >
-              <Rows4 class="h-[1.2em] w-[1.2em]" />
-            </Button>
-            <Button
-              class="join-item"
-              modifier="square"
-              appearance={viewType() === "kanban" ? "neutral" : undefined}
-              onClick={() => setViewType("kanban")}
-            >
-              <Columns2 class="h-[1.2em] w-[1.2em]" />
-            </Button>
-          </div>
+    <div>
+      <div class="flex gap-3">
+        <div class="flex-1 flex justify-center">
+          <DataFilterBar<ProductRecord>
+            filters={filters}
+            setFilters={setFilters}
+            availableFields={getAvailableFields<ProductRecord>("product")}
+            onCreateNew={() => {
+              navigate(`/products/${NEW_RECORD_ID}`);
+            }}
+          />
         </div>
-        <Suspense fallback={<LoadFullScreen />}>
-          <Show
-            when={viewType() === "table"}
-            fallback={
-              <ProductKanban
-                products={products() ?? []}
-                onItemClick={(item) => setSearchParams({ product: item.id })}
-                onCreateNew={() => setSearchParams({ product: NEW_RECORD_ID })}
-              />
-            }
+        <div class="join">
+          <Button
+            class="join-item"
+            modifier="square"
+            appearance={viewType() === "table" ? "neutral" : undefined}
+            onClick={() => setViewType("table")}
           >
-            <Card class="mt-2">
-              <ProductTable
-                onRowClick={(item) => setSearchParams({ product: item.id })}
-                products={products() ?? []}
-                onCreateNew={() => setSearchParams({ product: NEW_RECORD_ID })}
-              />
-            </Card>
-          </Show>
-        </Suspense>
+            <Rows4 class="h-[1.2em] w-[1.2em]" />
+          </Button>
+          <Button
+            class="join-item"
+            modifier="square"
+            appearance={viewType() === "kanban" ? "neutral" : undefined}
+            onClick={() => setViewType("kanban")}
+          >
+            <Columns2 class="h-[1.2em] w-[1.2em]" />
+          </Button>
+        </div>
       </div>
-    </Show>
+      <Suspense fallback={<LoadFullScreen />}>
+        <Show
+          when={viewType() === "table"}
+          fallback={
+            <ProductKanban
+              products={props.products() ?? []}
+              onItemClick={(item) => navigate(`/products/${item.id}`)}
+              onCreateNew={() => navigate(`/products/${NEW_RECORD_ID}`)}
+            />
+          }
+        >
+          <Card class="mt-2">
+            <ProductTable
+              onRowClick={(item) => navigate(`/products/${item.id}`)}
+              products={props.products() ?? []}
+              onCreateNew={() => navigate(`/products/${NEW_RECORD_ID}`)}
+            />
+          </Card>
+        </Show>
+      </Suspense>
+    </div>
   );
 };
 

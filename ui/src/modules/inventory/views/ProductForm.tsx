@@ -1,5 +1,5 @@
-import { Component, createResource, createSignal, onCleanup, Show } from "solid-js";
-import { Card, createForm, Toast, type BreadCrumb } from "@solidpb/ui-kit";
+import { Component, createResource, createSignal, Show } from "solid-js";
+import { Card, createForm, Toast } from "@solidpb/ui-kit";
 import { toaster } from "@kobalte/core/toast";
 
 import { camelCaseToLabel, getSelectOptions } from "../../../services/getAvailableFields";
@@ -16,10 +16,10 @@ interface ProductFromProps {
 
 export const ProductForm: Component<ProductFromProps> = (props) => {
   const Form = createForm<Partial<ProductRecord>>();
-  const { pb } = useAuthPB();
+  const { pb, createTag } = useAuthPB();
   const { setCrumbs } = useCrumbs();
 
-  const [product, { refetch, mutate }] = createResource(async () => {
+  const [product, { refetch, mutate: mutateProduct }] = createResource(async () => {
     if (props.productId && props.productId !== NEW_RECORD_ID) {
       const record = await pb
         .collection(Collections.Product)
@@ -46,7 +46,7 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
     const data = await pb.collection(Collections.ProductCategory).getFullList();
     return data;
   });
-  const [tagOptions] = createResource(async () => {
+  const [tagOptions, { mutate: mutateTagOptions }] = createResource(async () => {
     const data = await pb.collection(Collections.Tag).getFullList();
     return data;
   });
@@ -56,7 +56,6 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
   });
 
   const handleSave = async (data: Partial<ProductRecord>) => {
-    console.log(data);
     try {
       let prod: ProductRecord;
       if (data.id) {
@@ -84,7 +83,7 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
   // onCleanup(() => {});
 
   return (
-    <Show when={product()} fallback={<LoadFullScreen />}>
+    <Show when={product() && categories() && uomOptions() && tagOptions()} fallback={<LoadFullScreen />}>
       <Card>
         <Form data={product() ?? {}} onSave={handleSave}>
           <div class="sm:w-130 space-y-3">
@@ -117,7 +116,7 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
               labelKey="name"
               value={product()?.expand?.uom}
               onChange={(value) => {
-                mutate((prev) => {
+                mutateProduct((prev) => {
                   if (!prev) return prev;
                   return { ...prev, expand: { ...prev.expand, uom: value } };
                 });
@@ -133,7 +132,7 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
               labelKey="name"
               value={product()?.expand?.category}
               onChange={(value) => {
-                mutate((prev) => {
+                mutateProduct((prev) => {
                   if (!prev) return prev;
                   return { ...prev, expand: { ...prev.expand, category: value } };
                 });
@@ -148,12 +147,17 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
               labelKey="name"
               value={product()?.expand?.tags ?? []}
               onChange={(tags) => {
-                mutate((prev) => {
+                mutateProduct((prev) => {
                   if (!prev) return prev;
                   return { ...prev, expand: { ...prev.expand, tags } };
                 });
               }}
               multi
+              onCreateInline={async (text) => {
+                const newTag = await createTag(text);
+                mutateTagOptions((prev) => (prev ? [...prev, newTag] : [newTag]));
+                return newTag;
+              }}
             />
           </div>
         </Form>

@@ -15,9 +15,10 @@ import { Toast, Toaster } from "@solidpb/ui-kit";
 const NotFound = lazy(() => import("./routes/NotFound"));
 const Auth = lazy(() => import("./routes/Auth"));
 const Uom = lazy(() => import("./routes/Uom"));
-const Dashboard = lazy(() => import("./routes/Dashboard"));
+const Products = lazy(() => import("./routes/Products"));
 const Settings = lazy(() => import("./routes/Settings"));
 const Square = lazy(() => import("./routes/Square"));
+const Product = lazy(() => import("./routes/Product"));
 
 const root = document.getElementById("root");
 
@@ -84,7 +85,9 @@ function Content() {
 function App() {
   return (
     <Route path="/" component={AppLayout}>
-      <Route path="/" component={Dashboard} />
+      <Route path="/" component={Products} />
+      <Route path="/products" component={Products} />
+      <Route path="/products/:id" component={Product} />
       <Route path="/settings" component={Settings} />
       <Route path="/uom" component={Uom} />
       <Route path="/unauthorized" component={Unauthorised} />
