@@ -4,12 +4,12 @@ import { Button, Card, type Filter, type FilterGroup } from "@solidpb/ui-kit";
 import Rows4 from "lucide-solid/icons/rows-4";
 import Columns2 from "lucide-solid/icons/columns-2";
 
-import DataFilterBar from "../../../components/DataFilterBar";
-import { getAvailableFields } from "../../../services/getAvailableFields";
-import LoadFullScreen from "../../../views/app/LoadFullScreen";
+import DataFilterBar from "../../components/DataFilterBar";
+import { getAvailableFields } from "../../services/getAvailableFields";
+import LoadFullScreen from "../../views/app/LoadFullScreen";
 import ProductTable from "./ProductTable";
 import ProductKanban from "./ProductKanban";
-import { NEW_RECORD_ID } from "../../../../constants";
+import { NEW_RECORD_ID } from "../../../constants";
 
 interface ProductMultiViewProps {
   products: Resource<ProductRecord[]>;

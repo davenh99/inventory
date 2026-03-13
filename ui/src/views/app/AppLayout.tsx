@@ -99,7 +99,7 @@ export const AppLayout: ParentComponent = (props) => {
         </Container>
       </Drawer.Content>
       <Drawer.Drawer>
-        <Drawer.Trigger class="btn btn-ghost btn-square btn-sm hidden lg:flex mx-2 mt-2 w-12">
+        <Drawer.Trigger class="btn btn-ghost btn-square btn-sm hidden lg:flex mx-2 mt-2.5 mb-3.5 w-12">
           <DrawOpen size="24" class="is-drawer-open:hidden" />
           <DrawClose size="24" class="is-drawer-close:hidden" />
         </Drawer.Trigger>

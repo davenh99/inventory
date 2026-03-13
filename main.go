@@ -1,6 +1,8 @@
 package main
 
 import (
+	"app/core/changelog"
+	"app/core/role"
 	"app/utils"
 	"embed"
 	"io/fs"
@@ -16,14 +18,7 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
 
-	"app/ui/src/modules/base/hooks/changelog"
-	"app/ui/src/modules/base/hooks/role"
-	_ "app/ui/src/modules/base/migrations"
-	_ "app/ui/src/modules/inventory/migrations"
-	_ "app/ui/src/modules/pricing/migrations"
-	_ "app/ui/src/modules/purchase/migrations"
-	_ "app/ui/src/modules/sale/migrations"
-	_ "app/ui/src/modules/square/migrations"
+	_ "app/migrations"
 )
 
 var Version = "dev"

@@ -1,7 +1,7 @@
 import { Component } from "solid-js";
 import { useParams } from "@solidjs/router";
 
-import { ProductForm } from "../modules/inventory/views/ProductForm";
+import { ProductForm } from "../views/inventory/ProductForm";
 
 export const Product: Component = () => {
   const params = useParams();

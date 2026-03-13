@@ -2,12 +2,12 @@ import { Component, createResource, createSignal, Show } from "solid-js";
 import { Card, createForm, Toast } from "@solidpb/ui-kit";
 import { toaster } from "@kobalte/core/toast";
 
-import { camelCaseToLabel, getSelectOptions } from "../../../services/getAvailableFields";
-import { Collections } from "../../../../pocketbase-types";
-import { useAuthPB } from "../../../config/pocketbase";
-import LoadFullScreen from "../../../views/app/LoadFullScreen";
-import { NEW_RECORD_ID } from "../../../../constants";
-import { useCrumbs } from "../../../views/app/AppLayout";
+import { camelCaseToLabel, getSelectOptions } from "../../services/getAvailableFields";
+import { Collections } from "../../../pocketbase-types";
+import { useAuthPB } from "../../config/pocketbase";
+import LoadFullScreen from "../../views/app/LoadFullScreen";
+import { NEW_RECORD_ID } from "../../../constants";
+import { useCrumbs } from "../../views/app/AppLayout";
 
 interface ProductFromProps {
   productId?: string;

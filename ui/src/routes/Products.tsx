@@ -1,6 +1,6 @@
 import { Component, createResource } from "solid-js";
 
-import ProductMultiView from "../modules/inventory/views/ProductMultiView";
+import ProductMultiView from "../views/inventory/ProductMultiView";
 import { Collections } from "../../pocketbase-types";
 import { useAuthPB } from "../config/pocketbase";
 

@@ -2,10 +2,10 @@ import { Component, createResource, Show, Suspense } from "solid-js";
 import { Checkbox, Table } from "@solidpb/ui-kit";
 import { ColumnDef } from "@tanstack/solid-table";
 
-import { useAuthPB } from "../../../config/pocketbase";
-import { Collections } from "../../../../pocketbase-types";
-import LoadFullScreen from "../../../views/app/LoadFullScreen";
-import { camelCaseToLabel } from "../../../services/getAvailableFields";
+import { useAuthPB } from "../../config/pocketbase";
+import { Collections } from "../../../pocketbase-types";
+import LoadFullScreen from "../../views/app/LoadFullScreen";
+import { camelCaseToLabel } from "../../services/getAvailableFields";
 
 export const UomTable: Component = () => {
   const columns: ColumnDef<UomRecord>[] = [

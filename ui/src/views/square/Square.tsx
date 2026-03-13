@@ -3,7 +3,7 @@ import { Button, Card, Toast } from "@solidpb/ui-kit";
 import Import from "lucide-solid/icons/import";
 import { toaster } from "@kobalte/core";
 
-import { useAuthPB } from "../../../config/pocketbase";
+import { useAuthPB } from "../../config/pocketbase";
 
 export const Square: Component = () => {
   const { pb } = useAuthPB();

@@ -6,8 +6,7 @@ interface BaseRecord {
   readonly collectionId: string;
   readonly created: string;
   readonly updated: string;
-  expand?: { [key: string]: any };
-}
+  expand?: { [key: string]: any };}
 
 /* Collection type: auth */
 interface User {
@@ -216,3 +215,4 @@ interface SquareConfig {
 }
 type SquareConfigRecord = SquareConfig & BaseRecord;
 type SquareConfigUpdatePayload = Partial<SquareConfigRecord>;
+

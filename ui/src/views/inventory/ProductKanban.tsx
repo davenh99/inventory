@@ -1,7 +1,7 @@
 import { Component, Show } from "solid-js";
 import NoProducts from "./NoProducts";
 import { Image, Kanban } from "@solidpb/ui-kit";
-import { useAuthPB } from "../../../config/pocketbase";
+import { useAuthPB } from "../../config/pocketbase";
 
 interface ProductKanbanProps {
   products: ProductRecord[];

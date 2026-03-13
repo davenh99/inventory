@@ -1,6 +1,6 @@
 import { Component } from "solid-js";
 
-import UomTable from "../modules/base/views/UomTable";
+import UomTable from "../views/base/UomTable";
 import { Card } from "@solidpb/ui-kit";
 
 const Uom: Component = () => {
