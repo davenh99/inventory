@@ -7,6 +7,25 @@ type TRole = Role & { expand?: { permissions: TPermission[] } };
 
 type TUser = User & { expand?: { role: TRole } };
 
+type ProductAttributeRecordExpand = ProductAttributeRecord & {
+  expand: {
+    attribute?: AttributeRecord;
+    productAttributeValue_via_productAttribute?: ProductAttributeValueRecordExpand[];
+  };
+};
+
+type ProductAttributeValueRecordExpand = ProductAttributeValueRecord & {
+  expand: {
+    attributeValue?: AttributeValueRecord;
+  };
+};
+
 type ProductRecordExpand = ProductRecord & {
-  expand?: { category: ProductCategoryRecord; tags: TagRecord[]; uom: UomRecord };
+  expand: {
+    category?: ProductCategoryRecord;
+    tags?: TagRecord[];
+    uom?: UomRecord;
+    bom_via_product?: BomRecord[];
+    productAttribute_via_product?: ProductAttributeRecordExpand[];
+  };
 };

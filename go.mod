@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/davenh99/pb-computedfields v0.2.0
-	github.com/davenh99/pb-typescript v0.4.0
+	github.com/davenh99/pb-typescript v0.4.1
 	github.com/joho/godotenv v1.5.1
 	github.com/pocketbase/pocketbase v0.36.5
 	github.com/square/square-go-sdk v1.5.0

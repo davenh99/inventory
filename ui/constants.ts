@@ -1,5 +1,10 @@
 export const THEME_KEY = "theme";
 export const EXPAND_USER = "role.permissions";
+export const EXPAND_PRODUCT =
+  "category,uom,tags,bom_via_product," +
+  "productAttribute_via_product.attribute," +
+  "productAttribute_via_product.productAttributeValue_via_productAttribute.attributeValue,";
+
 export const NEW_RECORD_ID = "_new_record";
 
 export const DROP_ABOVE_CLASS = `

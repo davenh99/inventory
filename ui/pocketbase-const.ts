@@ -154,6 +154,7 @@ export const fieldSchema: FieldSchema = {
     active: { type: "bool" },
     attributeValue: { type: "relation" },
     priceExtra: { type: "number" },
+    productAttribute: { type: "relation" },
     created: { type: "autodate" },
     updated: { type: "autodate" },
   },

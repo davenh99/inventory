@@ -538,6 +538,19 @@ func init() {
 						"type": "relation"
 					},
 					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_prodattr00",
+						"hidden": false,
+						"id": "relation3544843425",
+						"maxSelect": 1,
+						"minSelect": 0,
+						"name": "productAttribute",
+						"presentable": false,
+						"required": true,
+						"system": false,
+						"type": "relation"
+					},
+					{
 						"hidden": false,
 						"id": "bool1260321794",
 						"name": "active",

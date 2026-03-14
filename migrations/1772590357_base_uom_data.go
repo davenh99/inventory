@@ -23,14 +23,14 @@ func init() {
 		}
 
 		data := []UOM{
-			{Name: "Unit(s)", Category: "units", Ratio: 1, ReferenceUom: true, Active: true},
-			{Name: "Item(s)", Category: "units", Ratio: 1, Active: true},
-			{Name: "Box of 10", Category: "units", Ratio: 10, Active: true},
-			{Name: "Dozen", Category: "units", Ratio: 12, Active: true},
-			{Name: "L", Category: "volume", Ratio: 1, ReferenceUom: true, Active: true},
-			{Name: "mL", Category: "volume", Ratio: 0.001, Active: true},
-			{Name: "kg", Category: "weight", Ratio: 1, ReferenceUom: true, Active: true},
-			{Name: "g", Category: "weight", Ratio: 0.001, Active: true},
+			{Name: "Unit(s)", Category: "units", Ratio: 1, ReferenceUom: true},
+			{Name: "Item(s)", Category: "units", Ratio: 1},
+			{Name: "Box of 10", Category: "units", Ratio: 10},
+			{Name: "Dozen", Category: "units", Ratio: 12},
+			{Name: "L", Category: "volume", Ratio: 1, ReferenceUom: true},
+			{Name: "mL", Category: "volume", Ratio: 0.001},
+			{Name: "kg", Category: "weight", Ratio: 1, ReferenceUom: true},
+			{Name: "g", Category: "weight", Ratio: 0.001},
 		}
 
 		for _, name := range data {
@@ -40,7 +40,7 @@ func init() {
 			record.Set("category", name.Category)
 			record.Set("ratio", name.Ratio)
 			record.Set("referenceUom", name.ReferenceUom)
-			record.Set("active", name.Active)
+			record.Set("active", true)
 
 			app.Save(record)
 		}

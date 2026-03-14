@@ -19,6 +19,7 @@ const Products = lazy(() => import("./routes/Products"));
 const Settings = lazy(() => import("./routes/Settings"));
 const Square = lazy(() => import("./routes/Square"));
 const Product = lazy(() => import("./routes/Product"));
+const Recipe = lazy(() => import("./routes/Recipe"));
 
 const root = document.getElementById("root");
 
@@ -88,6 +89,7 @@ function App() {
       <Route path="/" component={Products} />
       <Route path="/products" component={Products} />
       <Route path="/products/:id" component={Product} />
+      <Route path="/recipes/:id" component={Recipe} />
       <Route path="/settings" component={Settings} />
       <Route path="/uom" component={Uom} />
       <Route path="/unauthorized" component={Unauthorised} />

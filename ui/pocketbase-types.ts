@@ -49,11 +49,8 @@ export interface CollectionRecords {
 }
 
 export interface TypedPocketBase extends PocketBase {
-  collection<K extends keyof CollectionRecords>(
-    name: K
-  ): RecordService<CollectionRecords[K]>;
-
-  // fallback for dynamic strings
-  collection(name: string): RecordService<any>;
+  collection<K extends keyof CollectionRecords>(name: K): RecordService<CollectionRecords[K]>;
+  // fallback for dynamic types
+  collection<T>(name: string): RecordService<T>;
 }
 

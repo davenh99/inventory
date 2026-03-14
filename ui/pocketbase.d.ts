@@ -149,6 +149,7 @@ interface ProductAttributeValue {
   active: boolean; // bool
   attributeValue: string; // relation
   priceExtra: number; // number
+  productAttribute: string; // relation
 }
 type ProductAttributeValueRecord = ProductAttributeValue & BaseRecord;
 type ProductAttributeValueUpdatePayload = Partial<ProductAttributeValueRecord>;
