@@ -60,7 +60,7 @@ export const AppLayout: ParentComponent = (props) => {
   };
 
   return (
-    <Drawer id="app-drawer">
+    <Drawer id="app-drawer" class="md:drawer-open">
       <Drawer.Content>
         <Navbar>
           <div class="flex items-center">

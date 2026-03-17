@@ -9,14 +9,14 @@ type TUser = User & { expand?: { role: TRole } };
 
 type ProductAttributeRecordExpand = ProductAttributeRecord & {
   expand: {
-    attribute?: AttributeRecord;
+    attribute: AttributeRecord;
     productAttributeValue_via_productAttribute?: ProductAttributeValueRecordExpand[];
   };
 };
 
-type ProductAttributeValueRecordExpand = ProductAttributeValueRecord & {
+type ProductAttributeValueRecordExpand = Partial<ProductAttributeValueRecord> & {
   expand: {
-    attributeValue?: AttributeValueRecord;
+    attributeValue: AttributeValueRecord;
   };
 };
 

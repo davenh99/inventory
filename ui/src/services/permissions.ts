@@ -1,5 +1,3 @@
-import { TPermission, TUser } from "../types";
-
 export function hasPermission(user: TUser | null, collection: string, action?: keyof TPermission) {
   if (!user?.role) return false;
   if (user.expand?.role.name === "admin") return true;

@@ -1,8 +1,9 @@
 import { useContext } from "solid-js";
 import { PBContext } from "./context";
 
-import { EXPAND_USER } from "../../../constants";
+import { EXPAND_PRODATTR, EXPAND_USER } from "../../../constants";
 import { Collections } from "../../../pocketbase-types";
+import { ClientResponseError } from "pocketbase";
 
 const BaseSignUpData = {
   dob: "",
@@ -69,9 +70,62 @@ export function useAuthPB() {
     throw new Error("User not authenticated");
   }
 
+  const safeGetRecord = async <T>(fn: () => Promise<T>): Promise<T | null> => {
+    try {
+      return await fn();
+    } catch (e) {
+      if (e instanceof ClientResponseError && e.status === 404) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
+  };
+
   const createTag = async (name: string) => {
     return pb.collection(Collections.Tag).create({ name });
   };
 
-  return { pb, user, logout, createTag };
+  const upsertAttribute = async (name: string, id?: string): Promise<AttributeRecord | null> => {
+    let existingRecord: AttributeRecord | null = null;
+
+    if (id) {
+      existingRecord = await safeGetRecord(() => pb.collection(Collections.Attribute).getOne(id));
+    } else {
+      existingRecord = await safeGetRecord(() =>
+        pb.collection(Collections.Attribute).getFirstListItem(`name="${name}"`),
+      );
+    }
+
+    const attribute = existingRecord ?? (await pb.collection(Collections.Attribute).create({ name }));
+
+    return attribute;
+  };
+
+  const upsertAttributeValue = async (
+    name: string,
+    attributeId: string,
+    id?: string,
+  ): Promise<AttributeValueRecord | null> => {
+    let existingRecord: AttributeValueRecord | null = null;
+
+    if (id) {
+      existingRecord = await safeGetRecord(() => pb.collection(Collections.AttributeValue).getOne(id));
+    } else {
+      existingRecord = await safeGetRecord(
+        () =>
+          pb
+            .collection(Collections.AttributeValue)
+            .getFirstListItem(`name="${name}" && attribute="${attributeId}"`), // TODO use pb query builder later for safety
+      );
+    }
+
+    const attributeValue =
+      existingRecord ??
+      (await pb.collection(Collections.AttributeValue).create({ name, attribute: attributeId }));
+
+    return attributeValue;
+  };
+
+  return { pb, user, logout, createTag, upsertAttribute, upsertAttributeValue };
 }

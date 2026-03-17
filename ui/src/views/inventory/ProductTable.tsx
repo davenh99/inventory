@@ -1,7 +1,9 @@
 import { Component, Show } from "solid-js";
-import { Table } from "@solidpb/ui-kit";
+import { Image, Table } from "@solidpb/ui-kit";
 import { ColumnDef } from "@tanstack/solid-table";
+
 import NoProducts from "./NoProducts";
+import { useAuthPB } from "../../config/pocketbase";
 
 interface ProductTableProps {
   products: ProductRecord[];
@@ -10,7 +12,16 @@ interface ProductTableProps {
 }
 
 export const ProductTable: Component<ProductTableProps> = (props) => {
+  const { pb } = useAuthPB();
   const columns: ColumnDef<ProductRecord>[] = [
+    {
+      accessorKey: "image",
+      header: "Image",
+      cell: (info) => {
+        const url = pb.files.getURL(info.row.original, (info.getValue() as string) || "");
+        return <Image src={url} alt="Product Image" class="h-8 w-8" />;
+      },
+    },
     {
       accessorKey: "name",
       header: "Name",

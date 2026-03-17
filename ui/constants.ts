@@ -5,6 +5,8 @@ export const EXPAND_PRODUCT =
   "productAttribute_via_product.attribute," +
   "productAttribute_via_product.productAttributeValue_via_productAttribute.attributeValue,";
 
+export const EXPAND_PRODATTR = "attribute";
+
 export const NEW_RECORD_ID = "_new_record";
 
 export const DROP_ABOVE_CLASS = `

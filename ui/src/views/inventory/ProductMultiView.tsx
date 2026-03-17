@@ -17,7 +17,14 @@ interface ProductMultiViewProps {
 
 export const ProductMultiView: Component<ProductMultiViewProps> = (props) => {
   const navigate = useNavigate();
-  const [viewType, setViewType] = createSignal<"table" | "kanban">("kanban");
+  const [viewType, setViewType] = createSignal<string>(
+    sessionStorage.getItem("productMultiViewType") ?? "kanban",
+  );
+  const handleViewTypeChange = (type: string) => {
+    setViewType(type);
+    sessionStorage.setItem("productMultiViewType", type);
+  };
+
   const [filters, setFilters] = createSignal<(Filter<ProductRecord> | FilterGroup<ProductRecord>)[]>([]);
 
   return (
@@ -29,7 +36,7 @@ export const ProductMultiView: Component<ProductMultiViewProps> = (props) => {
             setFilters={setFilters}
             availableFields={getAvailableFields<ProductRecord>("product")}
             onCreateNew={() => {
-              navigate(`/products/${NEW_RECORD_ID}`);
+              navigate(`/product/${NEW_RECORD_ID}`);
             }}
           />
         </div>
@@ -38,7 +45,7 @@ export const ProductMultiView: Component<ProductMultiViewProps> = (props) => {
             class="join-item"
             modifier="square"
             appearance={viewType() === "table" ? "neutral" : undefined}
-            onClick={() => setViewType("table")}
+            onClick={() => handleViewTypeChange("table")}
           >
             <Rows4 class="h-[1.2em] w-[1.2em]" />
           </Button>
@@ -46,7 +53,7 @@ export const ProductMultiView: Component<ProductMultiViewProps> = (props) => {
             class="join-item"
             modifier="square"
             appearance={viewType() === "kanban" ? "neutral" : undefined}
-            onClick={() => setViewType("kanban")}
+            onClick={() => handleViewTypeChange("kanban")}
           >
             <Columns2 class="h-[1.2em] w-[1.2em]" />
           </Button>
@@ -58,16 +65,16 @@ export const ProductMultiView: Component<ProductMultiViewProps> = (props) => {
           fallback={
             <ProductKanban
               products={props.products() ?? []}
-              onItemClick={(item) => navigate(`/products/${item.id}`)}
-              onCreateNew={() => navigate(`/products/${NEW_RECORD_ID}`)}
+              onItemClick={(item) => navigate(`/product/${item.id}`)}
+              onCreateNew={() => navigate(`/product/${NEW_RECORD_ID}`)}
             />
           }
         >
           <Card class="mt-2">
             <ProductTable
-              onRowClick={(item) => navigate(`/products/${item.id}`)}
+              onRowClick={(item) => navigate(`/product/${item.id}`)}
               products={props.products() ?? []}
-              onCreateNew={() => navigate(`/products/${NEW_RECORD_ID}`)}
+              onCreateNew={() => navigate(`/product/${NEW_RECORD_ID}`)}
             />
           </Card>
         </Show>

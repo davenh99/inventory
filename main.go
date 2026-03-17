@@ -1,21 +1,14 @@
 package main
 
 import (
-	"app/core/changelog"
-	"app/core/role"
-	"app/utils"
+	c "app/core"
 	"embed"
 	"io/fs"
 	"log"
-	"net/http"
 
-	computedfields "github.com/davenh99/pb-computedfields"
-	"github.com/davenh99/pb-typescript/gentypes"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/pocketbase/pocketbase/plugins/ghupdate"
-	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
 
 	_ "app/migrations"
@@ -27,48 +20,8 @@ var Version = "dev"
 var embeddedFiles embed.FS
 
 func main() {
-	env := utils.Env
 	app := pocketbase.New()
-
-	computedfields.Register(app, computedfields.Config{})
-	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
-		Automigrate: env.Env == "development",
-	})
-
-	changelog.Register(app, changelog.Config{
-		Collections: map[string][]string{
-			"user":          {"name"},
-			"supplierPrice": {"price", "discount"},
-		},
-	})
-
-	role.Register(app, role.Config{
-		App: app,
-		SkipCollectionRules: map[string]*role.SkipRules{
-			"user":          nil,
-			"changelog":     nil, // TODO make sure list and view allowed, maybe check if auth is not null?
-			"changelogDiff": nil, // TODO make sure list and view allowed, maybe check if auth is not null?
-			"role":          nil, // TODO make sure list and view allowed, maybe check if auth is not null?
-			"permission":    nil, // TODO make sure list and view allowed, maybe check if auth is not null?
-		},
-	})
-
-	switch env.Env {
-	case "development":
-		gentypes.Register(app, gentypes.Config{
-			FilePath: "ui",
-		})
-	case "production":
-		ghupdate.MustRegister(app, app.RootCmd, ghupdate.Config{
-			Owner:             env.GithubOwner,
-			Repo:              env.GithubRepo,
-			ArchiveExecutable: env.ArchiveExecutable,
-			HttpClient: &utils.AuthClient{
-				Token: env.GithubToken,
-				Base:  http.DefaultClient,
-			},
-		})
-	}
+	c.RegisterHooks(app)
 
 	// frontend
 	app.OnServe().Bind(&hook.Handler[*core.ServeEvent]{

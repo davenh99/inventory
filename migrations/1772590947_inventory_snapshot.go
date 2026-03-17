@@ -41,15 +41,6 @@ func init() {
 						"type": "text"
 					},
 					{
-						"hidden": false,
-						"id": "bool1260321794",
-						"name": "active",
-						"presentable": false,
-						"required": false,
-						"system": false,
-						"type": "bool"
-					},
-					{
 						"cascadeDelete": false,
 						"collectionId": "pbc_prodcateg0",
 						"hidden": false,
@@ -126,15 +117,6 @@ func init() {
 					},
 					{
 						"hidden": false,
-						"id": "bool1260321794",
-						"name": "active",
-						"presentable": false,
-						"required": false,
-						"system": false,
-						"type": "bool"
-					},
-					{
-						"hidden": false,
 						"id": "autodate2990389176",
 						"name": "created",
 						"onCreate": true,
@@ -194,15 +176,6 @@ func init() {
 						"required": true,
 						"system": false,
 						"type": "text"
-					},
-					{
-						"hidden": false,
-						"id": "bool1260321794",
-						"name": "active",
-						"presentable": false,
-						"required": false,
-						"system": false,
-						"type": "bool"
 					},
 					{
 						"cascadeDelete": false,
@@ -442,15 +415,6 @@ func init() {
 						"type": "text"
 					},
 					{
-						"hidden": false,
-						"id": "bool1260321794",
-						"name": "active",
-						"presentable": false,
-						"required": false,
-						"system": false,
-						"type": "bool"
-					},
-					{
 						"cascadeDelete": false,
 						"collectionId": "pbc_attribute0",
 						"hidden": false,
@@ -538,7 +502,7 @@ func init() {
 						"type": "relation"
 					},
 					{
-						"cascadeDelete": false,
+						"cascadeDelete": true,
 						"collectionId": "pbc_prodattr00",
 						"hidden": false,
 						"id": "relation3544843425",
@@ -549,15 +513,6 @@ func init() {
 						"required": true,
 						"system": false,
 						"type": "relation"
-					},
-					{
-						"hidden": false,
-						"id": "bool1260321794",
-						"name": "active",
-						"presentable": false,
-						"required": false,
-						"system": false,
-						"type": "bool"
 					},
 					{
 						"cascadeDelete": false,

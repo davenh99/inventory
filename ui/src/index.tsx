@@ -20,6 +20,8 @@ const Settings = lazy(() => import("./routes/Settings"));
 const Square = lazy(() => import("./routes/Square"));
 const Product = lazy(() => import("./routes/Product"));
 const Recipe = lazy(() => import("./routes/Recipe"));
+const ProductVariants = lazy(() => import("./routes/ProductVariants"));
+const ProductVariant = lazy(() => import("./routes/ProductVariant"));
 
 const root = document.getElementById("root");
 
@@ -87,9 +89,11 @@ function App() {
   return (
     <Route path="/" component={AppLayout}>
       <Route path="/" component={Products} />
-      <Route path="/products" component={Products} />
-      <Route path="/products/:id" component={Product} />
-      <Route path="/recipes/:id" component={Recipe} />
+      <Route path="/product" component={Products} />
+      <Route path="/product/:id" component={Product} />
+      <Route path="/productVariant" component={ProductVariants} />
+      <Route path="/productVariant/:id" component={ProductVariant} />
+      <Route path="/recipe/:id" component={Recipe} />
       <Route path="/settings" component={Settings} />
       <Route path="/uom" component={Uom} />
       <Route path="/unauthorized" component={Unauthorised} />
