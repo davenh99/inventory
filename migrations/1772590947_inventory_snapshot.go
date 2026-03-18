@@ -604,6 +604,20 @@ func init() {
 						"type": "text"
 					},
 					{
+						"autogeneratePattern": "",
+						"hidden": false,
+						"id": "text1731158936",
+						"max": 0,
+						"min": 0,
+						"name": "displayName",
+						"pattern": "",
+						"presentable": false,
+						"primaryKey": false,
+						"required": false,
+						"system": false,
+						"type": "text"
+					},
+					{
 						"cascadeDelete": false,
 						"collectionId": "pbc_prod000000",
 						"hidden": false,
@@ -624,6 +638,19 @@ func init() {
 						"required": false,
 						"system": false,
 						"type": "bool"
+					},
+					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_prodattval",
+						"hidden": false,
+						"id": "relation3678521604",
+						"maxSelect": 999,
+						"minSelect": 0,
+						"name": "productAttributeValues",
+						"presentable": false,
+						"required": false,
+						"system": false,
+						"type": "relation"
 					},
 					{
 						"hidden": false,

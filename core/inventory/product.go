@@ -1,11 +1,15 @@
 package inventory
 
 import (
+	"app/utils"
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -136,5 +140,109 @@ func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 		}
 	}
 
+	return updateProductVariants(e)
+}
+
+func updateProductVariants(e *core.RecordEvent) error {
+	existingVariants, err := e.App.FindRecordsByFilter("productVariant", fmt.Sprintf("product = '%s'", e.Record.Id), "", -1, 0, nil)
+	if err != nil {
+		return err
+	}
+
+	// map existing variants by a sorted key of attributeValue IDs for quick lookup
+	variantMap := map[string]*core.Record{}
+	for _, variant := range existingVariants {
+		vals := variant.Get("attributeValues") // assume it's a slice of IDs
+		if arr, ok := vals.([]string); ok {
+			key := strings.Join(arr, ",") // deterministic key
+			variantMap[key] = variant
+		}
+		// archive all existing variants first
+		variant.Set("active", false)
+	}
+
+	// generate all combinations of attribute values
+	attributeCombinations, err := getProductCombinationIDs(e.App, e.Record.Id)
+	if err != nil {
+		return err
+	}
+
+	for _, combo := range attributeCombinations {
+		key := strings.Join(combo, ",") // deterministic key
+		if existing, found := variantMap[key]; found {
+			// variant exists, activate it
+			existing.Set("active", true)
+		} else {
+			// variant doesn't exist, create new record
+			prodVariantColl, _ := e.App.FindCollectionByNameOrId("productVariant")
+
+			rec := core.NewRecord(prodVariantColl)
+			rec.Set("product", e.Record.Id)
+			rec.Set("attributeValues", combo)
+			// TODO need attr names actually
+			displayName := strings.Join(combo, " | ") // simple displayName from value IDs
+			rec.Set("displayName", displayName)
+			rec.Set("active", true)
+
+			err := e.App.Save(rec)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return e.Next()
+}
+
+// generate combinations of product attribute values (likely to be used for variant generation)
+func getProductCombinationIDs(app core.App, productId string) ([][]string, error) {
+	type Row struct {
+		Attribute      string `db:"attribute"`
+		ID             string `db:"id"`
+		AttributeValue string `db:"attributeValue"`
+	}
+	var rows []Row
+
+	err := app.DB().
+		Select(
+			"pa.attribute AS attribute",
+			"pav.id AS id",
+			"pav.attributeValue AS attributeValue",
+		).
+		From("productAttributeValue AS pav").
+		InnerJoin("productAttribute AS pa",
+			dbx.NewExp("pav.productAttribute = pa.id"),
+		).
+		Where(dbx.NewExp("pav.product = {:prod}", dbx.Params{"prod": productId})).
+		OrderBy("pa.attribute", "pav.attributeValue").
+		All(&rows)
+	if err != nil {
+		return nil, apis.NewInternalServerError("couldn't fetch product ids", err)
+	}
+
+	if len(rows) == 0 {
+		return [][]string{}, nil
+	}
+
+	attributeValues := make([][]string, 0)
+
+	currentAttr := rows[0].Attribute
+	currentVals := []string{}
+
+	for _, r := range rows {
+		if r.Attribute != currentAttr {
+			// flush previous group
+			attributeValues = append(attributeValues, currentVals)
+
+			// start new group
+			currentAttr = r.Attribute
+			currentVals = []string{}
+		}
+		currentVals = append(currentVals, r.ID)
+	}
+
+	// flush last group
+	attributeValues = append(attributeValues, currentVals)
+
+	return utils.CartesianProduct(attributeValues), nil
 }

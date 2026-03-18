@@ -2,3 +2,5 @@
 dist/*
 pb_data/
 .env
+
+coverage.out

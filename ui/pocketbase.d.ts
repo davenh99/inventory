@@ -6,8 +6,7 @@ interface BaseRecord {
   readonly collectionId: string;
   readonly created: string;
   readonly updated: string;
-  expand?: { [key: string]: any };
-}
+  expand?: { [key: string]: any };}
 
 /* Collection type: auth */
 interface User {
@@ -137,6 +136,7 @@ type ProductUpdatePayload = Partial<ProductRecord>;
 
 /* Collection type: base */
 interface ProductAttribute {
+  active: boolean; // bool
   attribute: string; // relation
   product: string; // relation
 }
@@ -146,6 +146,7 @@ type ProductAttributeUpdatePayload = Partial<ProductAttributeRecord>;
 /* Collection type: base */
 interface ProductAttributeValue {
   product: string; // relation
+  active: boolean; // bool
   attributeValue: string; // relation
   priceExtra: number; // number
   productAttribute: string; // relation
@@ -157,12 +158,14 @@ type ProductAttributeValueUpdatePayload = Partial<ProductAttributeValueRecord>;
 interface ProductVariant {
   sku: string; // text
   name: string; // text
+  displayName: string; // text
   product: string; // relation
   active: boolean; // bool
   sellPrice: number; // number
   squareItemVariation: string; // text
   sellPriceSquare: number; // number
   squareLastSync: string; // date
+  productAttributeValues: string[]; // relation
 }
 type ProductVariantRecord = ProductVariant & BaseRecord;
 type ProductVariantUpdatePayload = Partial<ProductVariantRecord>;
@@ -215,3 +218,4 @@ interface SquareConfig {
 }
 type SquareConfigRecord = SquareConfig & BaseRecord;
 type SquareConfigUpdatePayload = Partial<SquareConfigRecord>;
+
