@@ -206,7 +206,7 @@ func updateProductVariants(e *core.RecordEvent) error {
 
 			rec := core.NewRecord(prodVariantColl)
 			rec.Set("product", e.Record.Id)
-			rec.Set("attributeValues", ids)
+			rec.Set("productAttributeValues", ids)
 
 			rec.Set("displayName", name)
 			rec.Set("name", name)

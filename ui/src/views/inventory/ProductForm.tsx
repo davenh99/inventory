@@ -11,6 +11,7 @@ import LoadFullScreen from "../../views/app/LoadFullScreen";
 import { EXPAND_PRODUCT, NEW_RECORD_ID } from "../../../constants";
 import { useCrumbs } from "../../views/app/AppLayout";
 import ProductFormAttributesTab from "./ProductFormAttributesTab";
+import { buildUrl } from "../../services/navigation";
 
 interface ProductFromProps {
   productId?: string;
@@ -179,8 +180,15 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
               </a>
             </li>
             <li>
-              {/* TODO need to pass a filter with current product to this page */}
-              <a href={`/productVariant`}>
+              <a
+                href={buildUrl(
+                  "productVariant",
+                  "Product Variants",
+                  undefined,
+                  undefined,
+                  `product = '${product()!.id}'`,
+                )}
+              >
                 <Blocks /> Variations
               </a>
             </li>

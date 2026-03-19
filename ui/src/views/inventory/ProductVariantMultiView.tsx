@@ -1,6 +1,15 @@
-import { Component } from "solid-js";
+import { Component, Resource } from "solid-js";
 
-export const ProductVariantMultiView: Component = () => {
+import { BaseQueryParams } from "../../services/navigation";
+import { useSearchParams } from "@solidjs/router";
+
+interface ProductVariantMultiViewProps {
+  products: Resource<ProductVariantRecord[]>;
+}
+
+export const ProductVariantMultiView: Component<ProductVariantMultiViewProps> = () => {
+  const [params, setParams] = useSearchParams<BaseQueryParams>();
+
   return (
     <div class="p-4">
       <h1 class="text-2xl font-bold mb-4">Product Variants</h1>

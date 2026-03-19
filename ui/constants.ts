@@ -4,6 +4,7 @@ export const EXPAND_PRODUCT =
   "category,uom,tags,bom_via_product," +
   "productAttribute_via_product.attribute," +
   "productAttribute_via_product.productAttributeValue_via_productAttribute.attributeValue,";
+export const EXPAND_PRODUCT_VARIANT = "productAttributeValues";
 
 export const EXPAND_PRODATTR = "attribute";
 
