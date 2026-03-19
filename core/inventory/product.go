@@ -9,7 +9,6 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
@@ -162,26 +161,55 @@ func updateProductVariants(e *core.RecordEvent) error {
 	}
 
 	// generate all combinations of attribute values
-	attributeCombinations, err := getProductCombinationIDs(e.App, e.Record.Id)
+	attributeCombinations, err := getProductCombinations(e.App, e.Record.Id)
 	if err != nil {
 		return err
 	}
 
 	for _, combo := range attributeCombinations {
-		key := strings.Join(combo, ",") // deterministic key
+		ids := []string{}
+		for _, rec := range combo {
+			ids = append(ids, rec.Id)
+		}
+		key := strings.Join(ids, ",") // deterministic key
+
+		// expand attributeValue and attribute to get their names
+		errs := e.App.ExpandRecords(combo, []string{"attributeValue", "productAttribute.attribute"}, nil)
+		if len(errs) > 0 {
+			return fmt.Errorf("failed to expand attribute combinations: %v", errs)
+		}
+
+		name := ""
+		for i, rec := range combo {
+			if i > 0 {
+				name += ", "
+			}
+			attrValName := rec.ExpandedOne("attributeValue").GetString("name")
+			attrName := rec.ExpandedOne("productAttribute").ExpandedOne("attribute").GetString("name")
+			name += fmt.Sprintf("%s: %s", attrName, attrValName)
+		}
+		name = fmt.Sprintf("%s (%s)", e.Record.Get("name"), name)
+
 		if existing, found := variantMap[key]; found {
 			// variant exists, activate it
 			existing.Set("active", true)
+			existing.Set("name", name)
+
+			err := e.App.Save(existing)
+			if err != nil {
+				return err
+			}
+
 		} else {
 			// variant doesn't exist, create new record
 			prodVariantColl, _ := e.App.FindCollectionByNameOrId("productVariant")
 
 			rec := core.NewRecord(prodVariantColl)
 			rec.Set("product", e.Record.Id)
-			rec.Set("attributeValues", combo)
-			// TODO need attr names actually
-			displayName := strings.Join(combo, " | ") // simple displayName from value IDs
-			rec.Set("displayName", displayName)
+			rec.Set("attributeValues", ids)
+
+			rec.Set("displayName", name)
+			rec.Set("name", name)
 			rec.Set("active", true)
 
 			err := e.App.Save(rec)
@@ -195,54 +223,38 @@ func updateProductVariants(e *core.RecordEvent) error {
 }
 
 // generate combinations of product attribute values (likely to be used for variant generation)
-func getProductCombinationIDs(app core.App, productId string) ([][]string, error) {
-	type Row struct {
-		Attribute      string `db:"attribute"`
-		ID             string `db:"id"`
-		AttributeValue string `db:"attributeValue"`
-	}
-	var rows []Row
-
-	err := app.DB().
-		Select(
-			"pa.attribute AS attribute",
-			"pav.id AS id",
-			"pav.attributeValue AS attributeValue",
-		).
-		From("productAttributeValue AS pav").
-		InnerJoin("productAttribute AS pa",
-			dbx.NewExp("pav.productAttribute = pa.id"),
-		).
-		Where(dbx.NewExp("pav.product = {:prod}", dbx.Params{"prod": productId})).
-		OrderBy("pa.attribute", "pav.attributeValue").
-		All(&rows)
+func getProductCombinations(app core.App, productId string) ([][]*core.Record, error) {
+	records, err := app.FindRecordsByFilter(
+		"productAttributeValue",
+		"product = {:prod}",
+		"productAttribute.attribute.name, attributeValue.name",
+		-1,
+		0,
+		dbx.Params{"prod": productId},
+	)
 	if err != nil {
-		return nil, apis.NewInternalServerError("couldn't fetch product ids", err)
+		return nil, err
 	}
 
-	if len(rows) == 0 {
-		return [][]string{}, nil
-	}
+	seen := map[string]bool{}
+	prodAttrs := []string{}
+	prodAttrToValues := map[string][]*core.Record{}
 
-	attributeValues := make([][]string, 0)
+	for _, rec := range records {
+		prodAttr := rec.GetString("productAttribute")
 
-	currentAttr := rows[0].Attribute
-	currentVals := []string{}
-
-	for _, r := range rows {
-		if r.Attribute != currentAttr {
-			// flush previous group
-			attributeValues = append(attributeValues, currentVals)
-
-			// start new group
-			currentAttr = r.Attribute
-			currentVals = []string{}
+		if !seen[prodAttr] {
+			seen[prodAttr] = true
+			prodAttrs = append(prodAttrs, prodAttr)
 		}
-		currentVals = append(currentVals, r.ID)
+
+		prodAttrToValues[prodAttr] = append(prodAttrToValues[prodAttr], rec)
 	}
 
-	// flush last group
-	attributeValues = append(attributeValues, currentVals)
+	attributeValues := make([][]*core.Record, len(prodAttrs))
+	for i, attr := range prodAttrs {
+		attributeValues[i] = prodAttrToValues[attr]
+	}
 
 	return utils.CartesianProduct(attributeValues), nil
 }
