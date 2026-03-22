@@ -1,46 +1,16 @@
 import { expect, test } from "vitest";
-import { Filter, FilterGroup } from "@solidpb/ui-kit";
-import { parseFilterString, buildFilterString, filterStringToPBFilter } from "./filters";
-
-type ParseFilterTestCase = {
-  name: string;
-  input: string;
-  expected: (Filter<any> | FilterGroup<any>)[];
-};
+import { AdvancedFilter, Filter, FilterGroup } from "@solidpb/ui-kit";
+import { buildFilterString } from "./filters";
 
 type BuildFilterTestCase = {
   name: string;
-  input: (Filter<any> | FilterGroup<any>)[];
+  input: (Filter<any> | FilterGroup<any> | AdvancedFilter)[];
   expected: string;
 };
-
-type FilterStringToPBFilterTestCase = {
-  name: string;
-  input: string;
-  expected: string;
-};
-
-const parseFilterTestCases: ParseFilterTestCase[] = [
-  {
-    name: "simple filter",
-    input: "name·Name·text·null⁞ is⁞ test",
-    expected: [
-      {
-        field: {
-          name: "name",
-          label: "Name",
-          type: "text",
-        },
-        operator: "is",
-        value: "test",
-      },
-    ],
-  },
-];
 
 const buildFilterTestCases: BuildFilterTestCase[] = [
   {
-    name: "simple filter",
+    name: "simple text filter with equals",
     input: [
       {
         field: {
@@ -48,59 +18,256 @@ const buildFilterTestCases: BuildFilterTestCase[] = [
           label: "Name",
           type: "text",
         },
-        operator: "is",
+        operator: "=",
         value: "test",
       },
     ],
-    expected: "name·Name·text·null⁞ is⁞ test",
-  },
-];
-
-const filterStringToPBFilterTestCases: FilterStringToPBFilterTestCase[] = [
-  {
-    name: "simple text filter",
-    input: "name·Name·text·null⁞ is⁞ test",
     expected: "name = 'test'",
   },
   {
-    name: "select filter with options",
-    input: "status·Status·select·active◦Active¦inactive◦Inactive⁞ is⁞ active",
-    expected: "status = 'active'",
+    name: "filter with not equals",
+    input: [
+      {
+        field: {
+          name: "status",
+          label: "Status",
+          type: "text",
+        },
+        operator: "!=",
+        value: "archived",
+      },
+    ],
+    expected: "status != 'archived'",
   },
   {
-    name: "filter with not equal operator",
-    input: "category·Category·text·null⁞ is_not⁞ archived",
-    expected: "category != 'archived'",
+    name: "numeric filter with greater than",
+    input: [
+      {
+        field: {
+          name: "price",
+          label: "Price",
+          type: "number",
+        },
+        operator: ">",
+        value: 100,
+      },
+    ],
+    expected: "price > 100",
   },
   {
-    name: "filter with greater than operator",
-    input: "price·Price·number·null⁞ >⁞ 100",
-    expected: "price > '100'",
+    name: "numeric filter with less than or equal",
+    input: [
+      {
+        field: {
+          name: "quantity",
+          label: "Quantity",
+          type: "number",
+        },
+        operator: "<=",
+        value: 50,
+      },
+    ],
+    expected: "quantity <= 50",
   },
   {
-    name: "multiple filters with OR",
-    input: "name·Name·text·null⁞ is⁞ test␞category·Category·text·null⁞ is⁞ electronics",
-    expected: "name = 'test' || category = 'electronics'",
+    name: "multiple filters with AND",
+    input: [
+      {
+        field: {
+          name: "name",
+          label: "Name",
+          type: "text",
+        },
+        operator: "=",
+        value: "product",
+      },
+      {
+        field: {
+          name: "category",
+          label: "Category",
+          type: "text",
+        },
+        operator: "=",
+        value: "electronics",
+      },
+    ],
+    expected: "name = 'product' && category = 'electronics'",
+  },
+  {
+    name: "filter with contains operator",
+    input: [
+      {
+        field: {
+          name: "description",
+          label: "Description",
+          type: "text",
+        },
+        operator: "~",
+        value: "wireless",
+      },
+    ],
+    expected: "description ~ 'wireless'",
+  },
+  {
+    name: "three filters with AND",
+    input: [
+      {
+        field: {
+          name: "status",
+          label: "Status",
+          type: "text",
+        },
+        operator: "=",
+        value: "active",
+      },
+      {
+        field: {
+          name: "price",
+          label: "Price",
+          type: "number",
+        },
+        operator: ">",
+        value: 50,
+      },
+      {
+        field: {
+          name: "inStock",
+          label: "In Stock",
+          type: "bool",
+        },
+        operator: "=",
+        value: true,
+      },
+    ],
+    expected: "status = 'active' && price > 50 && inStock = true",
+  },
+  {
+    name: "filter with value containing quotes",
+    input: [
+      {
+        field: {
+          name: "name",
+          label: "Name",
+          type: "text",
+        },
+        operator: "=",
+        value: "O'Brien",
+      },
+    ],
+    expected: "name = 'O\\'Brien'",
+  },
+  {
+    name: "boolean filter",
+    input: [
+      {
+        field: {
+          name: "isPublished",
+          label: "Published",
+          type: "bool",
+        },
+        operator: "=",
+        value: false,
+      },
+    ],
+    expected: "isPublished = false",
+  },
+  {
+    name: "numeric filter without quotes",
+    input: [
+      {
+        field: {
+          name: "rating",
+          label: "Rating",
+          type: "number",
+        },
+        operator: ">=",
+        value: 4.5,
+      },
+    ],
+    expected: "rating >= 4.5",
+  },
+  {
+    name: "2 filters and filter group",
+    input: [
+      {
+        field: {
+          name: "status",
+          label: "Status",
+          type: "text",
+        },
+        operator: "=",
+        value: "active",
+      },
+      {
+        field: {
+          name: "price",
+          label: "Price",
+          type: "number",
+        },
+        operator: ">",
+        value: 50,
+      },
+      {
+        filters: [
+          {
+            field: {
+              name: "inStock",
+              label: "In Stock",
+              type: "bool",
+            },
+            operator: "=",
+            value: true,
+          },
+          {
+            field: {
+              name: "quantity",
+              label: "Quantity",
+              type: "number",
+            },
+            operator: ">",
+            value: 0,
+          },
+        ],
+      },
+    ],
+    expected: "status = 'active' && price > 50 && (inStock = true || quantity > 0)",
+  },
+  {
+    name: "filter group and advanced filter",
+    input: [
+      {
+        filters: [
+          {
+            field: {
+              name: "category",
+              label: "Category",
+              type: "text",
+            },
+            operator: "=",
+            value: "electronics",
+          },
+          {
+            field: {
+              name: "brand",
+              label: "Brand",
+              type: "text",
+            },
+            operator: "=",
+            value: "Acme",
+          },
+        ],
+      },
+      {
+        filter: "price > 100 && rating >= 4.5",
+      } as AdvancedFilter,
+    ],
+    expected: "(category = 'electronics' || brand = 'Acme') && price > 100 && rating >= 4.5",
   },
 ];
 
-// for (const testCase of parseFilterTestCases) {
-//   test(testCase.name, () => {
-//     const result = parseFilterString(testCase.input);
-//     expect(result).toEqual(testCase.expected);
-//   });
-// }
-
-// for (const testCase of buildFilterTestCases) {
-//   test(testCase.name, () => {
-//     const result = buildFilterString(testCase.input);
-//     expect(result).toEqual(testCase.expected);
-//   });
-// }
-
-for (const testCase of filterStringToPBFilterTestCases) {
+for (const testCase of buildFilterTestCases) {
   test(testCase.name, () => {
-    const result = filterStringToPBFilter(testCase.input);
+    const result = buildFilterString(testCase.input);
     expect(result).toEqual(testCase.expected);
   });
 }

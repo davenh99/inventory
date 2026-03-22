@@ -6,7 +6,7 @@ import { ProductForm } from "../views/inventory/ProductForm";
 export const Product: Component = () => {
   const params = useParams();
 
-  return <ProductForm productId={params.id} />;
+  return <ProductForm recordId={params.id} />;
 };
 
 export default Product;

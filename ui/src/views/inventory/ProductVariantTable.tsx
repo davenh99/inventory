@@ -1,14 +1,12 @@
 import { Component, Show } from "solid-js";
-import { Image, Table } from "@solidpb/ui-kit";
+import { Table } from "@solidpb/ui-kit";
 import { ColumnDef } from "@tanstack/solid-table";
 
-import NoProducts from "./NoProducts";
-import { useAuthPB } from "../../config/pocketbase";
+import NoProductVariants from "./NoProductVariants";
 
 interface ProductVariantTableProps {
   products: ProductVariantRecord[];
   onRowClick: (product: ProductVariantRecord) => void;
-  onCreateNew: () => void;
 }
 
 export const ProductVariantTable: Component<ProductVariantTableProps> = (props) => {
@@ -32,7 +30,7 @@ export const ProductVariantTable: Component<ProductVariantTableProps> = (props) 
   ];
 
   return (
-    <Show when={props.products.length} fallback={<NoProducts onCreateNew={props.onCreateNew} />}>
+    <Show when={props.products.length} fallback={<NoProductVariants />}>
       <Table<ProductVariantRecord>
         data={props.products}
         columns={columns}

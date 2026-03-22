@@ -29,3 +29,9 @@ type ProductRecordExpand = ProductRecord & {
     productAttribute_via_product?: ProductAttributeRecordExpand[];
   };
 };
+
+type ProductVariantRecordExpand = ProductVariantRecord & {
+  expand: {
+    productAttributeValues: ProductAttributeValueRecordExpand[];
+  };
+};

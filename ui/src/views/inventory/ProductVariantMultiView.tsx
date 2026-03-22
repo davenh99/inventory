@@ -1,20 +1,23 @@
-import { Component, Resource } from "solid-js";
+import { Component, Resource, Suspense } from "solid-js";
 
-import { BaseQueryParams } from "../../services/navigation";
-import { useSearchParams } from "@solidjs/router";
+import ProductVariantTable from "./ProductVariantTable";
+import LoadFullScreen from "../app/LoadFullScreen";
+import { useNavigate } from "@solidjs/router";
 
 interface ProductVariantMultiViewProps {
   products: Resource<ProductVariantRecord[]>;
 }
 
-export const ProductVariantMultiView: Component<ProductVariantMultiViewProps> = () => {
-  const [params, setParams] = useSearchParams<BaseQueryParams>();
+export const ProductVariantMultiView: Component<ProductVariantMultiViewProps> = (props) => {
+  const navigate = useNavigate();
 
   return (
-    <div class="p-4">
-      <h1 class="text-2xl font-bold mb-4">Product Variants</h1>
-      <p class="text-gray-600">Manage all variants of a product in one place.</p>
-    </div>
+    <Suspense fallback={<LoadFullScreen />}>
+      <ProductVariantTable
+        products={props.products() ?? []}
+        onRowClick={(record) => navigate(`/productVariant/${record.id}`)}
+      />
+    </Suspense>
   );
 };
 

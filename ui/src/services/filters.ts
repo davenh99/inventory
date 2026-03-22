@@ -2,48 +2,55 @@
  filters contains helpers for transforming filters to and from pocketbase string filter into filter types
  from @solidpb/ui-kit.
 
- due to the incompatibility between frontend and backend filters (and some filters are only frontend),
- such as fuzzy_match and loose_contains, we structure like this:
-
- filters <-> filterString -> pbFilterString
- (the filterString is used in the url and can contain frontend only filters,
- pbFilterString is what we send to pocketbase and only contains compatible filters)
-
+ at the moment the system is quite simple, we only need to convert filters to pocketbase filter string.
 */
 
-import { Filter, FilterGroup } from "@solidpb/ui-kit";
+import { AdvancedFilter, Filter, FilterGroup } from "@solidpb/ui-kit";
+import PocketBase from "pocketbase";
 
-export function parseFilterString<T>(filterStr: string): (Filter<T> | FilterGroup<T>)[] | null {
-  const filterGroups = filterStr.split("||");
+const pb = new PocketBase(); // just for the filter builder, we won't be making any requests with this instance
 
-  return null;
-}
+export function buildFilterString(filters: (Filter<any> | FilterGroup<any> | AdvancedFilter)[]): string {
+  let filterStrings: string[] = [];
 
-export function buildFilterString(filters: (Filter<any> | FilterGroup<any>)[]): string {
-  return "";
-}
+  const getFilterType = (
+    item: Filter<any> | FilterGroup<any> | AdvancedFilter,
+  ): "filter" | "group" | "advanced" => {
+    if ("filter" in item) return "advanced";
+    if ("filters" in item) return "group";
+    return "filter";
+  };
 
-export function filterStringToPBFilter(filterStr: string): string {
-  // Split by OR operator, process each filter individually, then rejoin
-  return filterStr
-    .split(" || ")
-    .map((filterPart) => {
-      // Find the operator position to separate metadata from condition
-      const operatorMatch = filterPart.match(/\s+(=|!=|>|<|>=|<=)\s+/);
-      if (!operatorMatch || operatorMatch.index === undefined) return "";
+  for (let filter of filters) {
+    const filterType = getFilterType(filter);
 
-      // Extract field name (first segment before first middle dot)
-      const fieldPart = filterPart.substring(0, operatorMatch.index);
-      const fieldName = fieldPart.split("·")[0];
+    switch (filterType) {
+      case "filter":
+        filter = filter as Filter<any>;
 
-      // Extract operator and value
-      const conditionPart = filterPart.substring(operatorMatch.index).trim();
-      return `${fieldName} ${conditionPart}`;
-    })
-    .filter((f) => f)
-    .join(" || ");
-}
+        // check if select value
+        if (typeof filter.value === "object" && filter.value !== null && "value" in filter.value) {
+          filter.value = filter.value.value;
+        }
 
-export function filtersToPBFilter<T>(filters: (Filter<T> | FilterGroup<T>)[]): string {
-  return filterStringToPBFilter(buildFilterString(filters));
+        console.log(typeof filter.value, filter.value);
+
+        filterStrings.push(
+          pb.filter(`${String(filter.field.name)} ${filter.operator} {:val}`, { val: filter.value }),
+        );
+        break;
+      case "group":
+        let filterGroupStrings: string[] = [];
+        for (let groupFilter of (filter as FilterGroup<any>).filters) {
+          filterGroupStrings.push(buildFilterString([groupFilter]));
+        }
+        filterStrings.push(`(${filterGroupStrings.join(" || ")})`);
+        break;
+      case "advanced":
+        filterStrings.push((filter as AdvancedFilter).filter);
+        break;
+    }
+  }
+
+  return filterStrings.join(" && ");
 }

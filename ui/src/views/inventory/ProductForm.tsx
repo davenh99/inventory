@@ -14,7 +14,7 @@ import ProductFormAttributesTab from "./ProductFormAttributesTab";
 import { buildUrl } from "../../services/navigation";
 
 interface ProductFromProps {
-  productId?: string;
+  recordId?: string;
   onSave?: (data: Partial<ProductRecordExpand>) => void;
 }
 
@@ -24,10 +24,10 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
   const { setCrumbs } = useCrumbs();
 
   const [product, { refetch, mutate: mutateProduct }] = createResource(async () => {
-    if (props.productId && props.productId !== NEW_RECORD_ID) {
+    if (props.recordId && props.recordId !== NEW_RECORD_ID) {
       const record = await pb
         .collection<ProductRecordExpand>(Collections.Product)
-        .getOne(props.productId, { expand: EXPAND_PRODUCT });
+        .getOne(props.recordId, { expand: EXPAND_PRODUCT });
 
       // console.log(record);
 
@@ -175,7 +175,9 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
         <div class="join-item bg-base-200 not-sm:rounded-t-2xl sm:rounded-l-2xl sm:min-w-40">
           <ul class="menu w-full">
             <li>
-              <a href={`/recipe/${product()!.expand?.bom_via_product?.[0]?.id || NEW_RECORD_ID}`}>
+              <a
+                href={`/recipe/${product()!.expand?.bom_via_product?.[0]?.id || NEW_RECORD_ID}?product=${product()!.id}`}
+              >
                 <ClipboardList /> Recipe
               </a>
             </li>
@@ -186,7 +188,9 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
                   "Product Variants",
                   undefined,
                   undefined,
-                  `product = '${product()!.id}'`,
+                  pb.filter(`${product()!.name}·product = {:prod}`, {
+                    prod: product()!.id,
+                  }),
                 )}
               >
                 <Blocks /> Variations
