@@ -14,7 +14,7 @@ type ProductAttributeRecordExpand = ProductAttributeRecord & {
   };
 };
 
-type ProductAttributeValueRecordExpand = Partial<ProductAttributeValueRecord> & {
+type ProductAttributeValueRecordExpand = ProductAttributeValueRecord & {
   expand: {
     attributeValue: AttributeValueRecord;
   };
@@ -32,6 +32,22 @@ type ProductRecordExpand = ProductRecord & {
 
 type ProductVariantRecordExpand = ProductVariantRecord & {
   expand: {
+    product: ProductRecord;
     productAttributeValues: ProductAttributeValueRecordExpand[];
+  };
+};
+
+type BomLineRecordExpand = BomLineRecord & {
+  expand: {
+    uom: UomRecord;
+    productVariant: ProductVariantRecordExpand;
+    productAttributeValues: ProductAttributeValueRecordExpand[];
+  };
+};
+
+type BomRecordExpand = BomRecord & {
+  expand: {
+    product: ProductRecordExpand;
+    bomLine_via_bom: BomLineRecordExpand[];
   };
 };

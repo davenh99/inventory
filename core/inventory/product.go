@@ -21,6 +21,8 @@ func Register(app *pocketbase.PocketBase) {
 }
 
 func attachProductAttributesAndValues(e *core.RecordRequestEvent) error {
+	e.Record.Set("productAttributes", []any{})
+
 	body, _ := io.ReadAll(e.Request.Body)
 
 	var payload map[string]any
@@ -43,6 +45,23 @@ func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 	productID := e.Record.Id
 
 	prodAttrfilter := fmt.Sprintf("product = '%s'", productID)
+
+	if len(productAttributes) == 0 {
+		// create the single product variant
+		err := updateProductVariants(e)
+		if err != nil {
+			return err
+		}
+		// if no attributes, delete any existing product attribute values for the product
+		unusedProdAttrValRecords, _ := e.App.FindRecordsByFilter(prodAttrValColl, prodAttrfilter, "", -1, 0, nil)
+		for _, rec := range unusedProdAttrValRecords {
+			err := e.App.Delete(rec)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 
 	// If expand data is present, process productAttribute_via_product
 	for _, attr := range productAttributes {
@@ -164,6 +183,25 @@ func updateProductVariants(e *core.RecordEvent) error {
 	attributeCombinations, err := getProductCombinations(e.App, e.Record.Id)
 	if err != nil {
 		return err
+	}
+
+	// generate singular variant if no attributes
+	if len(attributeCombinations) == 0 {
+		prodVariantColl, _ := e.App.FindCollectionByNameOrId("productVariant")
+
+		rec := core.NewRecord(prodVariantColl)
+		rec.Set("product", e.Record.Id)
+
+		rec.Set("displayName", e.Record.Get("name"))
+		rec.Set("name", e.Record.Get("name"))
+		rec.Set("active", true)
+
+		err := e.App.Save(rec)
+		if err != nil {
+			return err
+		}
+
+		return e.Next()
 	}
 
 	for _, combo := range attributeCombinations {

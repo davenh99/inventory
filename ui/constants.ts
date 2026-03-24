@@ -4,7 +4,13 @@ export const EXPAND_PRODUCT =
   "category,uom,tags,bom_via_product," +
   "productAttribute_via_product.attribute," +
   "productAttribute_via_product.productAttributeValue_via_productAttribute.attributeValue,";
-export const EXPAND_PRODUCT_VARIANT = "productAttributeValues.attributeValue";
+export const EXPAND_PRODUCT_VARIANT = "productAttributeValues.attributeValue, product.uom";
+export const EXPAND_BOM =
+  "bomLine_via_bom.productVariant.product.uom, " +
+  "bomLine_via_bom.productAttributeValues, " +
+  "bomLine_via_bom.uom, " +
+  "product.productAttribute_via_product.attribute, " +
+  "product.productAttribute_via_product.productAttributeValue_via_productAttribute.attributeValue";
 
 export const EXPAND_PRODATTR = "attribute";
 

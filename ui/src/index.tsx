@@ -19,7 +19,7 @@ const Products = lazy(() => import("./routes/Products"));
 const Settings = lazy(() => import("./routes/Settings"));
 const Square = lazy(() => import("./routes/Square"));
 const Product = lazy(() => import("./routes/Product"));
-const Recipe = lazy(() => import("./routes/Recipe"));
+const Bom = lazy(() => import("./routes/Bom"));
 const ProductVariants = lazy(() => import("./routes/ProductVariants"));
 const ProductVariant = lazy(() => import("./routes/ProductVariant"));
 
@@ -93,7 +93,7 @@ function App() {
       <Route path="/product/:id" component={Product} />
       <Route path="/productVariant" component={ProductVariants} />
       <Route path="/productVariant/:id" component={ProductVariant} />
-      <Route path="/recipe/:id" component={Recipe} />
+      <Route path="/bom/:id" component={Bom} />
       <Route path="/settings" component={Settings} />
       <Route path="/uom" component={Uom} />
       <Route path="/unauthorized" component={Unauthorised} />

@@ -49,7 +49,7 @@ export const ProductFormAttributesTab: Component<ProductFormAttributesTabProps> 
             header: "Attribute",
             id: "name",
             cell: (ctx) => (
-              <RelationPicker
+              <RelationPicker<AttributeRecord>
                 options={attributeOptions() ?? []}
                 valueKey="id"
                 labelKey="name"
@@ -74,7 +74,7 @@ export const ProductFormAttributesTab: Component<ProductFormAttributesTabProps> 
             header: "Options",
             id: "values",
             cell: (ctx) => (
-              <RelationPicker
+              <RelationPicker<AttributeValueRecord>
                 multi
                 options={filteredAttributeValueOptions(ctx.row.original.attribute) ?? []}
                 valueKey="id"

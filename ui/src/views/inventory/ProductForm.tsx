@@ -170,32 +170,34 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
   const selectedTab = sessionStorage.getItem("productFormSelectedTab") || "general";
 
   return (
-    <Show when={product() && uomOptions() && tagOptions()} fallback={<LoadFullScreen />}>
+    <Show when={product() !== undefined && uomOptions() && tagOptions()} fallback={<LoadFullScreen />}>
       <div class="flex flex-col sm:flex-row shadow-sm rounded-2xl w-fit">
         <div class="join-item bg-base-200 not-sm:rounded-t-2xl sm:rounded-l-2xl sm:min-w-40">
           <ul class="menu w-full">
             <li>
               <a
-                href={`/recipe/${product()!.expand?.bom_via_product?.[0]?.id || NEW_RECORD_ID}?product=${product()!.id}`}
+                href={`/bom/${product()!.expand?.bom_via_product?.[0]?.id || NEW_RECORD_ID}?product=${product()!.id}`}
               >
                 <ClipboardList /> Recipe
               </a>
             </li>
-            <li>
-              <a
-                href={buildUrl(
-                  "productVariant",
-                  "Product Variants",
-                  undefined,
-                  undefined,
-                  pb.filter(`${product()!.name}·product = {:prod}`, {
-                    prod: product()!.id,
-                  }),
-                )}
-              >
-                <Blocks /> Variations
-              </a>
-            </li>
+            <Show when={product()?.id}>
+              <li>
+                <a
+                  href={buildUrl(
+                    "productVariant",
+                    "Product Variants",
+                    undefined,
+                    undefined,
+                    pb.filter(`${product()!.name}·product = {:prod}`, {
+                      prod: product()!.id,
+                    }),
+                  )}
+                >
+                  <Blocks /> Variations
+                </a>
+              </li>
+            </Show>
           </ul>
         </div>
         <Card class="join-item shadow-none sm:rounded-l-none not-sm:rounded-t-none">
@@ -204,10 +206,16 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
             setData={(data) => mutateProduct(data as ProductRecordExpand)}
             onSave={handleSave}
           >
-            <div class="sm:min-w-220 space-y-3">
+            <div class="md:w-220 max-w-full space-y-3">
               <div class="flex flex-col sm:flex-row justify-between space-y-2">
                 <div class="space-y-2">
-                  <Form.TextField field="name" label="Product Name" size="xl" variant="ghost" />
+                  <Form.TextField
+                    field="name"
+                    label="Product Name"
+                    size="xl"
+                    variant="ghost"
+                    inputProps={{ placeholder: "Product Name" }}
+                  />
                   <Form.SwitchField field="canPurchase" label="Can Purchase" />
                   <Form.SwitchField field="canSell" label="Can Sell" />
                 </div>
@@ -271,7 +279,11 @@ export const ProductForm: Component<ProductFromProps> = (props) => {
                     onChange={(value) => {
                       mutateProduct((prev) => {
                         if (!prev) return prev;
-                        return { ...prev, expand: { ...prev.expand, uom: value } } as ProductRecordExpand;
+                        return {
+                          ...prev,
+                          uom: (value as UomRecord).id,
+                          expand: { ...prev.expand, uom: value },
+                        } as ProductRecordExpand;
                       });
                     }}
                     placeholder="Unit of Measure"

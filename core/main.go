@@ -17,7 +17,7 @@ import (
 func RegisterHooks(app *pocketbase.PocketBase) {
 	env := utils.Env
 
-	computedfields.Register(app, computedfields.Config{})
+	computedfields.Register(app, computedFieldsCfg)
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: env.Env == "development",
 	})
@@ -43,7 +43,8 @@ func RegisterHooks(app *pocketbase.PocketBase) {
 	switch env.Env {
 	case "development":
 		gentypes.Register(app, gentypes.Config{
-			FilePath: "ui",
+			FilePath:                   "ui",
+			CollectionAdditionalFields: computedFieldsCfg.ExtractFields(),
 		})
 	case "production":
 		ghupdate.MustRegister(app, app.RootCmd, ghupdate.Config{
