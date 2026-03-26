@@ -34,7 +34,12 @@ export const ProductTable: Component<ProductTableProps> = (props) => {
 
   return (
     <Show when={props.products.length} fallback={<NoProducts onCreateNew={props.onCreateNew} />}>
-      <Table<ProductRecord> data={props.products} columns={columns} onRowClick={props.onRowClick} headers />
+      <Table<ProductRecord>
+        data={props.products}
+        columns={columns}
+        onRowClick={props.onRowClick}
+        showHeaders
+      />
     </Show>
   );
 };

@@ -1,5 +1,6 @@
-import { Component, createResource, ErrorBoundary } from "solid-js";
+import { Component, createResource, ErrorBoundary, Suspense } from "solid-js";
 import { Button, Card, RelationPicker, Table, Link, Toast } from "@solidpb/ui-kit";
+import { createStore } from "solid-js/store";
 import { useSearchParams } from "@solidjs/router";
 import { ColumnDef } from "@tanstack/solid-table";
 import Plus from "lucide-solid/icons/plus";
@@ -9,6 +10,7 @@ import { useAuthPB } from "../../config/pocketbase";
 import { EXPAND_BOM, EXPAND_PRODUCT, EXPAND_PRODUCT_VARIANT, NEW_RECORD_ID } from "../../../constants";
 import { Collections } from "../../../pocketbase-types";
 import { BaseQueryParams } from "../../services/navigation";
+import LoadFullScreen from "../app/LoadFullScreen";
 
 interface BomFormProps {
   recordId?: string;
@@ -20,9 +22,10 @@ type BomSearchParams = BaseQueryParams & {
 
 export const BomForm: Component<BomFormProps> = (props) => {
   const [searchParams, setSearchParams] = useSearchParams<BomSearchParams>();
+  const [bomLines, setBomLines] = createStore<Partial<BomLineRecordExpand>[]>([]);
   const { pb } = useAuthPB();
 
-  const [bom, { mutate: mutateBom }] = createResource<BomRecordExpand | BomUpdatePayload>(async () => {
+  const [bom] = createResource<Partial<BomRecordExpand>>(async () => {
     if (props.recordId && props.recordId !== NEW_RECORD_ID) {
       const record = await pb
         .collection<BomRecordExpand>(Collections.Bom)
@@ -30,7 +33,7 @@ export const BomForm: Component<BomFormProps> = (props) => {
 
       return record;
     } else {
-      let data = { active: true, product: searchParams.product } as BomUpdatePayload;
+      let data = { active: true, product: searchParams.product } as Partial<BomRecordExpand>;
 
       if (searchParams.product) {
         const productRecord = await pb
@@ -39,7 +42,6 @@ export const BomForm: Component<BomFormProps> = (props) => {
 
         data.expand = {
           product: productRecord,
-          bomLine_via_bom: [],
         };
       } else {
         throw new Error("no product id supplied");
@@ -47,6 +49,18 @@ export const BomForm: Component<BomFormProps> = (props) => {
 
       return data;
     }
+  });
+  const [bomLinesResource] = createResource(async () => {
+    let records: BomLineRecordExpand[] = [];
+
+    if (bom()?.id) {
+      records = await pb
+        .collection(Collections.BomLine)
+        .getFullList({ filter: pb.filter("bom = {:bom}", { bom: bom()!.id }) });
+    }
+
+    setBomLines(records);
+    return records;
   });
   const [productVariantOptions] = createResource(async () => {
     const records = await pb.collection<ProductVariantRecordExpand>(Collections.ProductVariant).getFullList({
@@ -67,83 +81,27 @@ export const BomForm: Component<BomFormProps> = (props) => {
     return options;
   };
 
-  const handleBomLineProductVariantChange = (ind: number, pv: ProductVariantRecord) => {
-    mutateBom((prev) => {
-      if (!prev) return prev;
-      let updatedBomLine = bom()!.expand!.bomLine_via_bom[ind];
-
-      if (updatedBomLine) {
-        updatedBomLine.productVariant = pv.id;
-        updatedBomLine.qty = 1; // Reset qty to 1 when product variant changes
-        updatedBomLine.uom = pv.expand?.product.uom ?? ""; // Auto fill uom based on product
-        updatedBomLine.expand = {
-          ...updatedBomLine.expand,
-          productVariant: pv,
-          uom: pv.expand?.product.expand.uom, // Auto fill uom based on product
-        };
-      }
-
-      let newBomlines = [...(prev.expand?.bomLine_via_bom ?? [])];
-      newBomlines.splice(ind, 1, updatedBomLine);
-
-      return {
-        ...prev,
-        expand: {
-          ...prev.expand,
-          bomLine_via_bom: newBomlines,
-        },
-      } as BomRecordExpand;
-    });
+  const handleBomLineProductVariantChange = (ind: number, pv: ProductVariantRecordExpand) => {
+    setBomLines(ind, "qty", 1);
+    setBomLines(ind, "productVariant", pv.id);
+    setBomLines(ind, "uom", pv.expand?.product.uom ?? "");
+    setBomLines(ind, "expand", "productVariant", pv);
+    setBomLines(ind, "expand", "uom", pv.expand?.product.expand.uom);
   };
-
   const handleBomLineProductAttributeValuesChange = (
     ind: number,
     vals: ProductAttributeValueRecordExpand[],
   ) => {
-    mutateBom((prev) => {
-      if (!prev) return prev;
-      let updatedBomLine = bom()!.expand!.bomLine_via_bom[ind];
-
-      if (updatedBomLine) {
-        updatedBomLine.productAttributeValues = vals.map((val) => val.id);
-        updatedBomLine.expand = { ...updatedBomLine.expand, productAttributeValues: vals };
-      }
-
-      let newBomlines = [...(prev.expand?.bomLine_via_bom ?? [])];
-      newBomlines.splice(ind, 1, updatedBomLine);
-
-      return {
-        ...prev,
-        expand: {
-          ...prev.expand,
-          bomLine_via_bom: newBomlines,
-        },
-      } as BomRecordExpand;
-    });
+    setBomLines(
+      ind,
+      "productAttributeValues",
+      vals.map((val) => val.id),
+    );
+    setBomLines(ind, "expand", "productAttributeValues", vals);
   };
 
   const handleCreateBomLine = () => {
-    mutateBom((prev) => {
-      if (!prev) return prev;
-      const newBomLine = {
-        productAttributeValues: [],
-        qty: 1,
-        uom: "",
-        expand: {
-          productVariant: {},
-          productAttributeValues: [],
-          uom: { name: "" },
-        },
-      };
-
-      return {
-        ...prev,
-        expand: {
-          ...prev.expand,
-          bomLine_via_bom: [...(prev.expand?.bomLine_via_bom ?? []), newBomLine],
-        },
-      } as BomRecordExpand;
-    });
+    setBomLines((prev) => [...prev, { qty: 1 }]);
   };
 
   const handleSave = async () => {
@@ -152,32 +110,30 @@ export const BomForm: Component<BomFormProps> = (props) => {
     let bomId = props.recordId;
 
     if (bomId && bomId !== NEW_RECORD_ID) {
-      await pb.collection(Collections.Bom).update(bomId, bom() as BomUpdatePayload);
     } else {
       const createdBom = await pb.collection(Collections.Bom).create(bom() as BomUpdatePayload);
       bomId = createdBom.id;
+
+      // todo navigate to the id here probably
     }
 
     // Save bom lines
-    for (const line of bom()!.expand!.bomLine_via_bom) {
+    const batch = pb.createBatch();
+    for (const line of bomLines) {
+      const data: BomLineUpdatePayload = {
+        ...line,
+        bom: bomId,
+      };
+
       if (!line.id) {
-        await pb.collection(Collections.BomLine).create({
-          productVariant: line.productVariant,
-          productAttributeValues: line.productAttributeValues,
-          qty: line.qty,
-          uom: line.uom,
-          bom: bomId!,
-        } as BomLineUpdatePayload);
+        batch.collection(Collections.BomLine).create(data);
       } else {
-        await pb.collection(Collections.BomLine).update(line.id, {
-          productVariant: line.productVariant,
-          productAttributeValues: line.productAttributeValues,
-          qty: line.qty,
-          uom: line.uom,
-          bom: bomId,
-        } as BomLineUpdatePayload);
+        batch.collection(Collections.BomLine).update(line.id, data);
       }
     }
+
+    await batch.send();
+
     toaster.show((props) => (
       <Toast {...props} appearance="success" title="Saved" msg="Recipe saved successfully" />
     ));
@@ -191,7 +147,7 @@ export const BomForm: Component<BomFormProps> = (props) => {
         return (
           <RelationPicker<ProductVariantRecordExpand>
             options={productVariantOptions() ?? []}
-            value={ctx.row.original.expand.productVariant}
+            value={ctx.row.original.expand.productVariant ?? null}
             labelKey="name"
             valueKey="id"
             onChange={(val) =>
@@ -209,7 +165,7 @@ export const BomForm: Component<BomFormProps> = (props) => {
       id: "uom",
       header: "UOM",
       cell: (ctx) => {
-        return <p>{ctx.row.original.expand.uom.name}</p>;
+        return <p>{ctx.row.original.expand.uom?.name ?? ""}</p>;
       },
     },
     {
@@ -220,7 +176,7 @@ export const BomForm: Component<BomFormProps> = (props) => {
           <RelationPicker<ProductAttributeValueRecordExpand>
             multi
             options={productAttributeValueOptions()}
-            value={ctx.row.original.expand.productAttributeValues}
+            value={ctx.row.original.expand.productAttributeValues ?? null}
             labelKey="name"
             valueKey="id"
             onChange={(vals) =>
@@ -237,28 +193,30 @@ export const BomForm: Component<BomFormProps> = (props) => {
 
   return (
     <ErrorBoundary fallback={(err) => <p>{err.message}</p>}>
-      <Card>
-        <h2 class="text-md">
-          Recipe for <Link href={`/product/${bom()?.product}`}>{bom()?.expand?.product.name}</Link>
-        </h2>
+      <Suspense fallback={<LoadFullScreen />}>
+        <Card>
+          <h2 class="text-md">
+            Recipe for <Link href={`/product/${bom()?.product}`}>{bom()?.expand?.product.name}</Link>
+          </h2>
 
-        <Table<BomLineRecordExpand>
-          headers
-          emptyState={<p class="w-full text-center italic">No Recipe Lines</p>}
-          data={bom()?.expand?.bomLine_via_bom ?? []}
-          columns={bomLineColumns}
-        />
-        <div class="flex justify-center">
-          <Button appearance="success" onClick={handleCreateBomLine}>
-            <Plus class="w-[1.3em] h-[1.3em]" /> New line
-          </Button>
-        </div>
-        <div class="flex justify-end">
-          <Button appearance="success" onClick={handleSave}>
-            Save
-          </Button>
-        </div>
-      </Card>
+          <Table<BomLineRecordExpand>
+            showHeaders
+            emptyState={<p class="w-full text-center italic">No Recipe Lines</p>}
+            data={bom()?.expand?.bomLine_via_bom ?? []}
+            columns={bomLineColumns}
+          />
+          <div class="flex justify-center">
+            <Button appearance="success" onClick={handleCreateBomLine}>
+              <Plus class="w-[1.3em] h-[1.3em]" /> New line
+            </Button>
+          </div>
+          <div class="flex justify-end">
+            <Button appearance="success" onClick={handleSave}>
+              Save
+            </Button>
+          </div>
+        </Card>
+      </Suspense>
     </ErrorBoundary>
   );
 };

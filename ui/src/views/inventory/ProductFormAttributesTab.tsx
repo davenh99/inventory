@@ -5,18 +5,19 @@ import X from "lucide-solid/icons/x";
 
 import { useAuthPB } from "../../config/pocketbase";
 import { Collections } from "../../../pocketbase-types";
+import { ProductAttributeRecordDraft, ProductStore } from "./ProductForm";
 
 interface ProductFormAttributesTabProps {
-  product: Resource<Partial<ProductRecordExpand>>;
+  store: ProductStore;
   handleAttributeChange: (
     ind: number,
     attr: AttributeRecord | null,
-    prodAttr: ProductAttributeRecord | null,
+    prodAttr: ProductAttributeRecordDraft | null,
   ) => void;
   handleAttributeValuesChange: (
     ind: number,
     attrVals: AttributeValueRecord | AttributeValueRecord[] | null,
-    prodAttr: ProductAttributeRecord | null,
+    prodAttr: ProductAttributeRecordDraft | null,
   ) => void;
   handleDeleteAttribute: (ind: number) => void;
   handleAddAttribute: () => void;
@@ -40,10 +41,10 @@ export const ProductFormAttributesTab: Component<ProductFormAttributesTabProps> 
 
   return (
     <Show when={attributeOptions() && attributeOptions()}>
-      <Table<ProductAttributeRecordExpand>
-        headers
+      <Table<ProductAttributeRecordDraft>
+        showHeaders
         emptyState="No attributes"
-        data={props.product()!.expand?.productAttribute_via_product || []}
+        data={props.store.attributes || []}
         columns={[
           {
             header: "Attribute",
@@ -53,7 +54,7 @@ export const ProductFormAttributesTab: Component<ProductFormAttributesTabProps> 
                 options={attributeOptions() ?? []}
                 valueKey="id"
                 labelKey="name"
-                value={ctx.row.original.expand?.attribute ?? null}
+                value={ctx.row.original._attribute ?? null}
                 listboxAction={
                   <div class="px-1.25 pb-1.25">
                     <p class="text-sm italic p-1 text-center">Create new (enter)</p>
@@ -74,39 +75,37 @@ export const ProductFormAttributesTab: Component<ProductFormAttributesTabProps> 
             header: "Options",
             id: "values",
             cell: (ctx) => (
-              <RelationPicker<AttributeValueRecord>
-                multi
-                options={filteredAttributeValueOptions(ctx.row.original.attribute) ?? []}
-                valueKey="id"
-                labelKey="name"
-                value={
-                  ctx.row.original.expand.productAttributeValue_via_productAttribute?.map(
-                    (val) => val.expand.attributeValue,
-                  ) ?? null
-                }
-                listboxAction={
-                  <div class="px-1.25 pb-1.25">
-                    <p class="text-sm italic p-1 text-center">Create new (enter)</p>
-                  </div>
-                }
-                onChange={(val) =>
-                  props.handleAttributeValuesChange(
-                    ctx.row.index,
-                    val as AttributeValueRecord | AttributeValueRecord[] | null,
-                    ctx.row.original,
-                  )
-                }
-                onCreateInline={async (text) => {
-                  if (!ctx.row.original.attribute) return undefined;
-                  const rec = await upsertAttributeValue(
-                    text,
-                    ctx.row.original.attribute,
-                    ctx.row.original.id,
-                  );
-                  await refetchAttributeValueOptions();
-                  return rec ?? undefined;
-                }}
-              />
+              <Show when={!!ctx.row.original.attribute}>
+                <RelationPicker<AttributeValueRecord>
+                  multi
+                  options={filteredAttributeValueOptions(ctx.row.original.attribute!) ?? []}
+                  valueKey="id"
+                  labelKey="name"
+                  value={ctx.row.original._productAttributeValues?.map((val) => val._attributeValue) ?? null}
+                  listboxAction={
+                    <div class="px-1.25 pb-1.25">
+                      <p class="text-sm italic p-1 text-center">Create new (enter)</p>
+                    </div>
+                  }
+                  onChange={(val) =>
+                    props.handleAttributeValuesChange(
+                      ctx.row.index,
+                      val as AttributeValueRecord | AttributeValueRecord[] | null,
+                      ctx.row.original,
+                    )
+                  }
+                  onCreateInline={async (text) => {
+                    if (!ctx.row.original.attribute) return undefined;
+                    const rec = await upsertAttributeValue(
+                      text,
+                      ctx.row.original.attribute,
+                      ctx.row.original.id,
+                    );
+                    await refetchAttributeValueOptions();
+                    return rec ?? undefined;
+                  }}
+                />
+              </Show>
             ),
           },
           {

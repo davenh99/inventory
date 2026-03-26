@@ -35,7 +35,7 @@ export const ProductVariantTable: Component<ProductVariantTableProps> = (props) 
         data={props.products}
         columns={columns}
         onRowClick={props.onRowClick}
-        headers
+        showHeaders
       />
     </Show>
   );

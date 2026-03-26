@@ -355,6 +355,19 @@ func init() {
 					},
 					{
 						"cascadeDelete": false,
+						"collectionId": "pbc_prodattr00",
+						"hidden": false,
+						"id": "relation1576700464",
+						"maxSelect": 999,
+						"minSelect": 0,
+						"name": "productAttributes",
+						"presentable": false,
+						"required": false,
+						"system": false,
+						"type": "relation"
+					},
+					{
+						"cascadeDelete": false,
 						"collectionId": "pbc_tag0000000",
 						"hidden": false,
 						"id": "relation1874629670",
@@ -441,6 +454,19 @@ func init() {
 						"type": "relation"
 					},
 					{
+						"cascadeDelete": false,
+						"collectionId": "pbc_prodattval",
+						"hidden": false,
+						"id": "relation1407081415",
+						"maxSelect": 999,
+						"minSelect": 1,
+						"name": "productAttributeValues",
+						"presentable": false,
+						"required": true,
+						"system": false,
+						"type": "relation"
+					},
+					{
 						"hidden": false,
 						"id": "autodate2990389176",
 						"name": "created",
@@ -487,19 +513,6 @@ func init() {
 						"required": true,
 						"system": true,
 						"type": "text"
-					},
-					{
-						"cascadeDelete": false,
-						"collectionId": "pbc_prod000000",
-						"hidden": false,
-						"id": "relation3544843437",
-						"maxSelect": 1,
-						"minSelect": 0,
-						"name": "product",
-						"presentable": false,
-						"required": false,
-						"system": false,
-						"type": "relation"
 					},
 					{
 						"cascadeDelete": true,

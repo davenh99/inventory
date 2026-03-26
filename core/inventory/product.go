@@ -9,10 +9,17 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 func Register(app *pocketbase.PocketBase) {
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		se.Router.POST("/product/{id}/updateProductVariants", UpdateProductVariants).Bind(apis.RequireAuth())
+
+		return se.Next()
+	})
+
 	app.OnRecordCreateRequest("product").BindFunc(attachProductAttributesAndValues)
 	app.OnRecordUpdateRequest("product").BindFunc(attachProductAttributesAndValues)
 
@@ -21,17 +28,17 @@ func Register(app *pocketbase.PocketBase) {
 }
 
 func attachProductAttributesAndValues(e *core.RecordRequestEvent) error {
-	e.Record.Set("productAttributes", []any{})
+	e.Record.Set("_productAttributes", []any{})
 
 	body, _ := io.ReadAll(e.Request.Body)
 
 	var payload map[string]any
 	json.Unmarshal(body, &payload)
 
-	// If expand data is present, add productAttribute_via_product to the record data for response
-	if expand, ok := payload["expand"].(map[string]any); ok {
-		if productAttrs, ok := expand["productAttribute_via_product"].([]any); ok {
-			e.Record.Set("productAttributes", productAttrs)
+	// If data is present, add _productAttributes to the record data for response
+	if body, ok := payload["body"].(map[string]any); ok {
+		if productAttrs, ok := body["_productAttributes"]; ok {
+			e.Record.Set("_productAttributes", productAttrs)
 		}
 	}
 
@@ -41,14 +48,15 @@ func attachProductAttributesAndValues(e *core.RecordRequestEvent) error {
 func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 	prodAttrColl, _ := e.App.FindCollectionByNameOrId("productAttribute")
 	prodAttrValColl, _ := e.App.FindCollectionByNameOrId("productAttributeValue")
-	productAttributes := e.Record.Get("productAttributes").([]any)
-	productID := e.Record.Id
+	productAttributes := e.Record.Get("_productAttributes").([]any)
+	productId := e.Record.Id // TODO do I know if this is populated on createExecute? investigate
+	productAttributeIds := []string{}
 
-	prodAttrfilter := fmt.Sprintf("product = '%s'", productID)
+	prodAttrfilter := fmt.Sprintf("product = '%s'", productId)
 
 	if len(productAttributes) == 0 {
 		// create the single product variant
-		err := updateProductVariants(e)
+		err := updateProductVariants(e.App, productId)
 		if err != nil {
 			return err
 		}
@@ -63,39 +71,42 @@ func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 		return nil
 	}
 
-	// If expand data is present, process productAttribute_via_product
-	for _, attr := range productAttributes {
-		attrMap := attr.(map[string]any)
+	// update product attributes and attribute values in transaction.
+	e.App.RunInTransaction(func(txApp core.App) error {
+		for _, attr := range productAttributes {
+			attrMap := attr.(map[string]any)
+			var prodAttrRecord *core.Record
 
-		// Save productAttribute record
-		var prodAttrRecord *core.Record
+			productAttributeValueIds := []string{}
 
-		if id, ok := attrMap["id"].(string); ok && id != "" {
-			// add existing prodattr id to filter to exclude from deleting
-			prodAttrfilter += fmt.Sprintf(" && id != '%s'", id)
-			// If ID is present, load existing record for update
-			prodAttrRec, err := e.App.FindRecordById(prodAttrColl, id)
+			if id, ok := attrMap["id"].(string); ok && id != "" {
+				// add existing prodattr id to filter to exclude from deleting
+				prodAttrfilter += fmt.Sprintf(" && id != '%s'", id)
+				// If ID is present, load existing record for update
+				prodAttrRec, err := txApp.FindRecordById(prodAttrColl, id)
+				if err != nil {
+					return err
+				}
+				prodAttrRecord = prodAttrRec
+			} else {
+				prodAttrRecord = core.NewRecord(prodAttrColl)
+			}
+			prodAttrRecord.Load(attrMap)
+			prodAttrRecord.Set("product", productId)
+
+			// save prodattribute (no validate to avoid error if no prodattribute values)
+			err := txApp.SaveNoValidate(prodAttrRecord)
 			if err != nil {
 				return err
 			}
-			prodAttrRecord = prodAttrRec
-		} else {
-			prodAttrRecord = core.NewRecord(prodAttrColl)
-		}
-		prodAttrRecord.Load(attrMap)
-		prodAttrRecord.Set("product", productID)
-		err := e.App.Save(prodAttrRecord)
-		if err != nil {
-			return err
-		}
-		// add the new id to the filter to exclude from deleting
-		prodAttrfilter += fmt.Sprintf(" && id != '%s'", prodAttrRecord.Id)
 
-		prodAttrValfilter := fmt.Sprintf("product = '%s' && productAttribute = '%s'", productID, prodAttrRecord.Id)
+			productAttributeIds = append(productAttributeIds, prodAttrRecord.Id)
+			// add the new id to the filter to exclude from deleting
+			prodAttrfilter += fmt.Sprintf(" && id != '%s'", prodAttrRecord.Id)
+			prodAttrValfilter := fmt.Sprintf("product = '%s' && productAttribute = '%s'", productId, prodAttrRecord.Id)
 
-		// Save nested productAttributeValue records
-		if attrExpand, ok := attrMap["expand"].(map[string]any); ok {
-			if prodAttrValues, ok := attrExpand["productAttributeValue_via_productAttribute"].([]any); ok {
+			// save prodattribute values, fill in prodattribute id
+			if prodAttrValues, ok := attrMap["_productAttributeValues"].([]any); ok {
 				for _, val := range prodAttrValues {
 					valMap := val.(map[string]any)
 
@@ -104,21 +115,19 @@ func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 
 					if id, ok := valMap["id"].(string); ok && id != "" {
 						// remove attr values where attr value attr not equal to productattr attr
-						if prodAttrValExpand, ok := valMap["expand"].(map[string]any); ok {
-							if attrVal, ok := prodAttrValExpand["attributeValue"].(map[string]any); ok {
-								if attrValAttr, ok := attrVal["attribute"].(string); ok && attrValAttr == prodAttrRecord.GetString("attribute") {
-									// add existing prodattrval id to filter to exclude from deleting
-									prodAttrValfilter += fmt.Sprintf(" && id != '%s'", id)
+						if attrVal, ok := valMap["_attributeValue"].(map[string]any); ok {
+							if attrValAttr, ok := attrVal["attribute"].(string); ok && attrValAttr == prodAttrRecord.GetString("attribute") {
+								// add existing prodattrval id to filter to exclude from deleting
+								prodAttrValfilter += fmt.Sprintf(" && id != '%s'", id)
 
-									// If ID and attribute are present, load existing record for update
-									prodAttrValRec, err := e.App.FindRecordById(prodAttrValColl, id)
-									if err != nil {
-										return err
-									}
-									prodAttrValRecord = prodAttrValRec
-								} else {
-									continue
+								// If ID and attribute are present, load existing record for update
+								prodAttrValRec, err := txApp.FindRecordById(prodAttrValColl, id)
+								if err != nil {
+									return err
 								}
+								prodAttrValRecord = prodAttrValRec
+							} else {
+								continue
 							}
 						}
 					} else {
@@ -127,27 +136,40 @@ func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 
 					prodAttrValRecord.Load(valMap)
 					prodAttrValRecord.Set("productAttribute", prodAttrRecord.Id)
-					prodAttrValRecord.Set("product", productID)
-					err := e.App.Save(prodAttrValRecord)
+					prodAttrValRecord.Set("product", productId)
+					err := txApp.Save(prodAttrValRecord)
 					if err != nil {
 						return err
 					}
 
+					productAttributeValueIds = append(productAttributeValueIds, prodAttrValRecord.Id)
 					// add the new id to the filter to exclude from deleting
 					prodAttrValfilter += fmt.Sprintf(" && id != '%s'", prodAttrValRecord.Id)
 				}
 			}
-		}
 
-		// Delete any productAttributeValue records that are not included in the current payload
-		unusedProdAttrValRecords, _ := e.App.FindRecordsByFilter(prodAttrValColl, prodAttrValfilter, "", -1, 0, nil)
-		for _, rec := range unusedProdAttrValRecords {
-			err := e.App.Delete(rec)
+			// save prodattribute (with validation this time), with list of prodattribute ids
+			prodAttrRecord.Set("productAttributeValues", productAttributeValueIds)
+			err = txApp.Save(prodAttrRecord)
 			if err != nil {
 				return err
 			}
+
+			// Delete any productAttributeValue records that are not included in the current payload
+			unusedProdAttrValRecords, _ := txApp.FindRecordsByFilter(prodAttrValColl, prodAttrValfilter, "", -1, 0, nil)
+			for _, rec := range unusedProdAttrValRecords {
+				err := txApp.Delete(rec)
+				if err != nil {
+					return err
+				}
+			}
 		}
-	}
+
+		return nil
+	})
+
+	// afterwards, update product attribute ids on the product (productAttributeIds)
+	e.Record.Set("productAttributes", productAttributeIds)
 
 	// Delete any product attribute records that are not included in the current payload
 	unusedProdAttrRecords, _ := e.App.FindRecordsByFilter(prodAttrColl, prodAttrfilter, "", -1, 0, nil)
@@ -158,11 +180,27 @@ func upsertProductAttributesAndValues(e *core.RecordEvent) error {
 		}
 	}
 
-	return updateProductVariants(e)
+	return e.Next()
 }
 
-func updateProductVariants(e *core.RecordEvent) error {
-	existingVariants, err := e.App.FindRecordsByFilter("productVariant", fmt.Sprintf("product = '%s'", e.Record.Id), "", -1, 0, nil)
+func UpdateProductVariants(e *core.RequestEvent) error {
+	productId := e.Request.PathValue("id")
+
+	err := updateProductVariants(e.App, productId)
+	if err != nil {
+		return err
+	}
+
+	return e.Next()
+}
+
+func updateProductVariants(app core.App, productId string) error {
+	product, err := app.FindRecordById("product", productId)
+	if err != nil {
+		return err
+	}
+
+	existingVariants, err := app.FindRecordsByFilter("productVariant", "product = {:id}", "", -1, 0, dbx.Params{"id": productId})
 	if err != nil {
 		return err
 	}
@@ -170,7 +208,7 @@ func updateProductVariants(e *core.RecordEvent) error {
 	// map existing variants by a sorted key of attributeValue IDs for quick lookup
 	variantMap := map[string]*core.Record{}
 	for _, variant := range existingVariants {
-		vals := variant.Get("attributeValues") // assume it's a slice of IDs
+		vals := variant.Get("attributeValues")
 		if arr, ok := vals.([]string); ok {
 			key := strings.Join(arr, ",") // deterministic key
 			variantMap[key] = variant
@@ -180,28 +218,28 @@ func updateProductVariants(e *core.RecordEvent) error {
 	}
 
 	// generate all combinations of attribute values
-	attributeCombinations, err := getProductCombinations(e.App, e.Record.Id)
+	attributeCombinations, err := getProductCombinations(app, productId)
 	if err != nil {
 		return err
 	}
 
 	// generate singular variant if no attributes
 	if len(attributeCombinations) == 0 {
-		prodVariantColl, _ := e.App.FindCollectionByNameOrId("productVariant")
+		prodVariantColl, _ := app.FindCollectionByNameOrId("productVariant")
 
 		rec := core.NewRecord(prodVariantColl)
-		rec.Set("product", e.Record.Id)
+		rec.Set("product", productId)
 
-		rec.Set("displayName", e.Record.Get("name"))
-		rec.Set("name", e.Record.Get("name"))
+		rec.Set("displayName", product.Get("name"))
+		rec.Set("name", product.Get("name"))
 		rec.Set("active", true)
 
-		err := e.App.Save(rec)
+		err = app.Save(rec)
 		if err != nil {
 			return err
 		}
 
-		return e.Next()
+		return nil
 	}
 
 	for _, combo := range attributeCombinations {
@@ -212,7 +250,7 @@ func updateProductVariants(e *core.RecordEvent) error {
 		key := strings.Join(ids, ",") // deterministic key
 
 		// expand attributeValue and attribute to get their names
-		errs := e.App.ExpandRecords(combo, []string{"attributeValue", "productAttribute.attribute"}, nil)
+		errs := app.ExpandRecords(combo, []string{"attributeValue", "productAttribute.attribute"}, nil)
 		if len(errs) > 0 {
 			return fmt.Errorf("failed to expand attribute combinations: %v", errs)
 		}
@@ -226,38 +264,37 @@ func updateProductVariants(e *core.RecordEvent) error {
 			attrName := rec.ExpandedOne("productAttribute").ExpandedOne("attribute").GetString("name")
 			name += fmt.Sprintf("%s: %s", attrName, attrValName)
 		}
-		name = fmt.Sprintf("%s (%s)", e.Record.Get("name"), name)
+		name = fmt.Sprintf("%s (%s)", product.Get("name"), name)
 
 		if existing, found := variantMap[key]; found {
 			// variant exists, activate it
 			existing.Set("active", true)
 			existing.Set("name", name)
 
-			err := e.App.Save(existing)
+			err := app.Save(existing)
 			if err != nil {
 				return err
 			}
 
 		} else {
 			// variant doesn't exist, create new record
-			prodVariantColl, _ := e.App.FindCollectionByNameOrId("productVariant")
+			prodVariantColl, _ := app.FindCollectionByNameOrId("productVariant")
 
 			rec := core.NewRecord(prodVariantColl)
-			rec.Set("product", e.Record.Id)
+			rec.Set("product", productId)
 			rec.Set("productAttributeValues", ids)
 
 			rec.Set("displayName", name)
 			rec.Set("name", name)
 			rec.Set("active", true)
 
-			err := e.App.Save(rec)
+			err := app.Save(rec)
 			if err != nil {
 				return err
 			}
 		}
 	}
-
-	return e.Next()
+	return nil
 }
 
 // generate combinations of product attribute values (likely to be used for variant generation)

@@ -6,7 +6,7 @@ TODO:
 
 - [x] attributes/values
 - [x] product variants
-- [ ] 'recipe' (bom)
+- [x] 'recipe' (bom)
 - [ ] computed sell price
 - [ ] filter functionality on products view (maybe general filters -> pb filter helper)
 - [ ] import from square

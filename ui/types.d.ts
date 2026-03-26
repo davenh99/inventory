@@ -10,7 +10,7 @@ type TUser = User & { expand?: { role: TRole } };
 type ProductAttributeRecordExpand = ProductAttributeRecord & {
   expand: {
     attribute: AttributeRecord;
-    productAttributeValue_via_productAttribute?: ProductAttributeValueRecordExpand[];
+    productAttributeValues: ProductAttributeValueRecordExpand[];
   };
 };
 
@@ -26,13 +26,13 @@ type ProductRecordExpand = ProductRecord & {
     tags?: TagRecord[];
     uom?: UomRecord;
     bom_via_product?: BomRecord[];
-    productAttribute_via_product?: ProductAttributeRecordExpand[];
+    productAttributes?: ProductAttributeRecordExpand[];
   };
 };
 
 type ProductVariantRecordExpand = ProductVariantRecord & {
   expand: {
-    product: ProductRecord;
+    product: ProductRecord & { expand: { uom: UomRecord } };
     productAttributeValues: ProductAttributeValueRecordExpand[];
   };
 };
@@ -41,13 +41,12 @@ type BomLineRecordExpand = BomLineRecord & {
   expand: {
     uom: UomRecord;
     productVariant: ProductVariantRecordExpand;
-    productAttributeValues: ProductAttributeValueRecordExpand[];
+    productAttributeValues?: ProductAttributeValueRecordExpand[];
   };
 };
 
 type BomRecordExpand = BomRecord & {
   expand: {
     product: ProductRecordExpand;
-    bomLine_via_bom: BomLineRecordExpand[];
   };
 };
