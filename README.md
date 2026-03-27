@@ -1,5 +1,7 @@
 # inventory
 
+## moved to [codeberg](https://codeberg.org/davenh99/inventory)
+
 Inventory app for small business
 
 TODO:
